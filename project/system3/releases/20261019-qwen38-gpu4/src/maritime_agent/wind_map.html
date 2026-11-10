@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>海域态势工作台 · Maritime Intelligence Workspace</title>
+  <link rel="stylesheet" href="/assets/leaflet-1.9.4.css">
+  <link rel="stylesheet" href="/assets/wind-map.css?v=4.2.0">
+</head>
+<body>
+  <!-- 顶部沉浸式指挥中心导航与全局 KPI 栏 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="/" class="back-link">← 返回对话</a>
+      <div class="brand">
+        <div class="brand-title">
+          <span class="live-pulse"></span>
+          <strong>海域态势工作台</strong>
+        </div>
+        <span class="subtitle">多源态势融合 · 目标调查 · 可追溯智能分析</span>
+      </div>
+      <!-- 动态研判海区选择下拉框 -->
+      <div class="workspace-region-selector-wrapper" id="region-selector-wrapper">
+        <span class="region-select-icon">🌐</span>
+        <select id="workspace-region-select" class="workspace-region-select" title="切换研判海区与数据视口">
+          <option value="">载入研判海区中…</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- USCG 海事安全防御通报 -->
+    <div class="topbar-advisory">
+      <span class="advisory-tag">态势提示</span>
+      <span class="advisory-text" id="advisory-text">USCG 设定 Port Condition Zulu：港区封闭，船舶系泊避风。</span>
+    </div>
+
+    <!-- 目标聚焦锁定状态条 (Target Reticle Lock Bar) -->
+    <div class="target-lock-bar" id="target-lock-bar" hidden>
+      <span class="lock-indicator">🎯</span>
+      <span class="lock-label">当前聚焦锁定:</span>
+      <strong id="lock-target-name">--</strong>
+      <span class="lock-meta" id="lock-target-meta">--</span>
+      <button type="button" class="btn-unlock-target" id="btn-unlock-target" title="解除聚焦锁定">×</button>
+    </div>
+
+    <div class="topbar-kpis">
+      <div class="kpi-card highlight-cyan">
+        <span class="kpi-label">演变时窗 (UTC)</span>
+        <strong id="kpi-time">2024-07-08 12:00</strong>
+      </div>
+      <div class="kpi-card highlight-green">
+        <span class="kpi-label">海域在泊/在航船舶</span>
+        <strong id="kpi-vessels">594 艘 <small>(在航 4)</small></strong>
+      </div>
+      <div class="kpi-card highlight-red">
+        <span class="kpi-label">全域极大风速</span>
+        <strong id="kpi-max-wind">21.2 m/s <small>(41.2节)</small></strong>
+      </div>
+      <div class="kpi-card highlight-purple">
+        <span class="kpi-label">台风眼最低气压</span>
+        <strong id="kpi-pressure">988.0 hPa</strong>
+      </div>
+      <a href="/anomaly-workbench" class="btn-briefing" id="anomaly-workbench-map-entry" style="text-decoration:none" title="打开独立的异常行为初筛与物理证据核查台">⚡ 异常初筛核查</a>
+      <button type="button" class="btn-briefing" id="btn-open-briefing" title="多源情报自适应审计与综合研判简报生成">
+        <span class="briefing-pulse-dot"></span>
+        <span class="briefing-icon">📑</span>
+        <span>态势研判简报</span>
+      </button>
+      <button type="button" class="ai-entry-button" id="ai-copilot-toggle">
+        <span class="ai-entry-dot"></span>
+        智能调查
+      </button>
+    </div>
+  </header>
+
+  <!-- 主视口区域 -->
+  <main class="main-viewport">
+    <div id="map"></div>
+    <canvas id="wind-canvas"></canvas>
+
+    <nav class="map-action-rail" aria-label="地图工作区">
+      <button type="button" id="rail-vessels" class="rail-button" title="船舶目标">
+        <span>⌖</span><small>目标</small>
+      </button>
+      <button type="button" id="rail-layers" class="rail-button" title="地图图层">
+        <span>◫</span><small>图层</small>
+      </button>
+      <button type="button" id="rail-weather-probe" class="rail-button" title="气象点位探针" aria-pressed="false">
+        <span class="rail-pin-icon" aria-hidden="true"></span><small>探针</small>
+      </button>
+      <button type="button" id="rail-analysis" class="rail-button" title="智能调查">
+        <span>✦</span><small>调查</small>
+      </button>
+      <a href="/situation-cube" class="rail-button" title="态势立方体">
+        <span>⬡</span><small>证据</small>
+      </a>
+    </nav>
+
+    <div class="map-tool-status" id="map-tool-status" hidden>
+      <span class="tool-status-dot"></span>
+      <strong>气象点位探针</strong>
+      <span>点击海面取样</span>
+      <kbd>Esc</kbd><span>退出</span>
+    </div>
+
+    <aside class="ai-copilot-panel" id="ai-copilot-panel" hidden>
+      <div class="copilot-header">
+        <div>
+          <span class="copilot-eyebrow">MARITIME INTELLIGENCE</span>
+          <h2>智能调查</h2>
+        </div>
+        <button type="button" class="copilot-close" id="ai-copilot-close" aria-label="关闭">×</button>
+      </div>
+      <div class="copilot-context">
+        <span class="context-live"></span>
+        <div><strong>地图上下文已连接</strong><small id="copilot-context-text">当前区域与时间将随问题提交</small></div>
+      </div>
+      <div class="copilot-starters" id="copilot-starters">
+        <button type="button" data-question="当前时刻该区域有哪些在航船舶和异常目标？">当前区域概览</button>
+        <button type="button" data-question="结合 AIS、气象、GIS 和遥感证据，分析当前区域的主要风险。">综合风险分析</button>
+        <button type="button" data-question="当前区域有哪些遥感目标没有可信的 AIS 对应？">疑似暗船目标</button>
+      </div>
+      <div class="copilot-thread" id="copilot-thread">
+        <div class="copilot-welcome">
+          <strong>从地图开始调查</strong>
+          <p>可以直接询问船舶、遥感目标、天气风险或区域态势。回答会保留来源和适用边界。</p>
+        </div>
+      </div>
+      <form class="copilot-composer" id="copilot-form">
+        <textarea id="copilot-question" rows="2" placeholder="例如：这个时间窗内，哪些船舶需要重点核查？"></textarea>
+        <div class="copilot-composer-foot">
+          <span>基于当前地图时间与研究区域</span>
+          <button type="submit" id="copilot-submit">发送</button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- 左侧可折叠船舶检索与态势侧栏 -->
+    <aside class="sidebar-vessels collapsed" id="sidebar-vessels">
+      <button type="button" class="sidebar-toggle-btn" id="sidebar-toggle" title="展开/收起船舶态势面板">
+        <span class="toggle-icon">◀</span>
+      </button>
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <h3>海域船舶动态监管</h3>
+          <span class="vessel-total-tag" id="sidebar-vessel-total">594 艘</span>
+          <button type="button" class="sidebar-close-btn" id="sidebar-close" title="关闭目标面板" aria-label="关闭目标面板">×</button>
+        </div>
+
+        <!-- 搜索与动态在航筛选 -->
+        <div class="search-box">
+          <input type="text" id="vessel-search-input" placeholder="输入船名、MMSI 快速定位…" autocomplete="off">
+          <button type="button" id="vessel-search-clear" class="search-clear-btn" hidden>×</button>
+        </div>
+
+        <div class="underway-filter-row">
+          <label class="underway-label">
+            <input type="checkbox" id="filter-underway-only">
+            <span>⚡ 仅看在航移动船舶 (Underway)</span>
+          </label>
+        </div>
+
+        <!-- 船型分类与过滤器 -->
+        <div class="vessel-filters">
+          <button type="button" class="v-filter-btn active" data-class="all">全部 (<span id="count-all">594</span>)</button>
+          <button type="button" class="v-filter-btn" data-class="tanker">油轮 (<span id="count-tanker">18</span>)</button>
+          <button type="button" class="v-filter-btn" data-class="cargo">货船 (<span id="count-cargo">10</span>)</button>
+          <button type="button" class="v-filter-btn" data-class="tug">拖轮 (<span id="count-tug">119</span>)</button>
+          <button type="button" class="v-filter-btn" data-class="other">其他 (<span id="count-other">447</span>)</button>
+        </div>
+
+        <!-- 船舶列表 -->
+        <div class="vessel-list" id="vessel-list">
+          <div class="vessel-list-loading">正在读取海域船舶 AIS 实时点位…</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 右侧悬浮专业图层控制坞 (Layer Dock) -->
+    <div class="layer-dock" id="layer-dock">
+      <div class="dock-header">
+        <span class="dock-title">🗺️ 图层与海况要素</span>
+        <button type="button" class="dock-collapse-btn" id="dock-collapse" title="最小化图层面板">−</button>
+      </div>
+
+      <div class="dock-body" id="dock-body">
+        <!-- 底图切换 -->
+        <div class="dock-group">
+          <div class="dock-group-title">底图模式</div>
+          <div class="basemap-selector">
+            <button type="button" class="bmap-btn active" data-bmap="dark" title="暗夜深邃海图">🌙 暗夜海图</button>
+            <button type="button" class="bmap-btn" data-bmap="nautical" title="经典航海水文图">🌊 水文海图</button>
+            <button type="button" class="bmap-btn" data-bmap="satellite" title="高分辨率卫星遥感">🛰️ 卫星影像</button>
+          </div>
+        </div>
+
+        <div class="dock-group dock-presets">
+          <div class="dock-group-title">快捷视图</div>
+          <div class="map-preset-grid" role="group" aria-label="地图快捷视图">
+            <button type="button" class="map-preset-btn active" data-map-preset="overview">概览</button>
+            <button type="button" class="map-preset-btn" data-map-preset="navigation">航运</button>
+            <button type="button" class="map-preset-btn" data-map-preset="weather">气象</button>
+            <button type="button" class="map-preset-btn" data-map-preset="clean">清爽</button>
+          </div>
+          <p class="dock-hint">一键切换常用图层组合，细节可在下方展开。</p>
+        </div>
+
+        <!-- 气象与海况图层 -->
+        <div class="dock-group">
+          <div class="dock-group-title">气象与海况要素</div>
+          <label class="layer-toggle-row">
+            <input type="checkbox" id="layer-wind-stream">
+            <span class="layer-icon">🌪️</span>
+            <span class="layer-name">动态粒子风场流线</span>
+          </label>
+          <div class="slider-subrow" id="particle-density-row">
+            <span class="sub-label">流线密度</span>
+            <input type="range" id="particle-count-slider" min="400" max="1800" step="100" value="1000">
+          </div>
+          <label class="layer-toggle-row" id="row-typhoon-track">
+            <input type="checkbox" id="layer-typhoon-track" checked>
+            <span class="layer-icon">🌀</span>
+            <span class="layer-name">台风中心路径与风圈</span>
+          </label>
+          <label class="layer-toggle-row" id="row-weather-stations">
+            <input type="checkbox" id="layer-stations" checked>
+            <span class="layer-icon">📡</span>
+            <span class="layer-name">NOAA 浮标测站实况</span>
+          </label>
+          <details class="dock-advanced dock-advanced-compact" id="details-typhoon-models">
+            <summary>显示气压与浪高模型</summary>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-isobars">
+              <span class="layer-icon">〰️</span>
+              <span class="layer-name">海面气压与等压线</span>
+            </label>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-waves">
+              <span class="layer-icon">🌊</span>
+              <span class="layer-name">海浪与有效浪高 (m)</span>
+            </label>
+          </details>
+        </div>
+
+        <!-- 航运态势图层 -->
+        <div class="dock-group">
+          <div class="dock-group-title">航运交通 (AIS)</div>
+          <label class="layer-toggle-row">
+            <input type="checkbox" id="layer-vessels" checked>
+            <span class="layer-icon">🚢</span>
+            <span class="layer-name">AIS 真实船舶动态船模</span>
+          </label>
+          <label class="layer-toggle-row">
+            <input type="checkbox" id="layer-vessel-vectors">
+            <span class="layer-icon">🧭</span>
+            <span class="layer-name">在航船 30m 航向矢量线</span>
+          </label>
+        </div>
+
+        <!-- 卫星遥感与雷达检测图层 -->
+        <div class="dock-group" id="dock-group-remote">
+          <div class="dock-group-title">卫星遥感 (SAR)</div>
+          <label class="layer-toggle-row">
+            <input type="checkbox" id="layer-remote-scenes">
+            <span class="layer-icon">🛰️</span>
+            <span class="layer-name">Sentinel-1 遥感切片外廓</span>
+          </label>
+          <label class="layer-toggle-row">
+            <input type="checkbox" id="layer-remote-detections">
+            <span class="layer-icon">🎯</span>
+            <span class="layer-name">CFAR 船体雷达目标 (<span id="count-remote-detections">0</span>)</span>
+          </label>
+          <div id="remote-scenes-timeline-helper" class="remote-timeline-helper" hidden></div>
+        </div>
+
+        <!-- 港口空间要素：默认只留下轻量的港区参考，业务细节按需展开。 -->
+        <div class="dock-group">
+          <div class="dock-group-title">港口空间参考</div>
+          <label class="layer-toggle-row">
+            <input type="checkbox" id="layer-port-boundary">
+            <span class="layer-icon">🌐</span>
+            <span class="layer-name">港区范围参考线</span>
+          </label>
+
+          <details class="dock-advanced dock-advanced-compact">
+            <summary>显示航道与锚泊参考</summary>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-nav-lines">
+              <span class="layer-icon">╍</span>
+              <span class="layer-name">航道中心线（推荐）</span>
+            </label>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-anchor-markers">
+              <span class="layer-icon">⚓</span>
+              <span class="layer-name">锚泊点位（推荐）</span>
+            </label>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-fairways">
+              <span class="layer-icon">▧</span>
+              <span class="layer-name">主通航水道范围面（精确）</span>
+            </label>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-anchorages">
+              <span class="layer-icon">▧</span>
+              <span class="layer-name">法定锚泊区范围面（精确）</span>
+            </label>
+          </details>
+
+          <details class="dock-advanced">
+            <summary>显示精细港口设施</summary>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-nav-aids">
+              <span class="layer-icon">🗼</span>
+              <span class="layer-name">助航灯桩与浮标</span>
+            </label>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-docks">
+              <span class="layer-icon">🏢</span>
+              <span class="layer-name">突堤码头作业区</span>
+            </label>
+            <label class="layer-toggle-row">
+              <input type="checkbox" id="layer-berths">
+              <span class="layer-icon">📍</span>
+              <span class="layer-name">深水泊位安全缓冲圈</span>
+            </label>
+          </details>
+
+          <!-- GIS 面域填充透明度调节 -->
+          <div class="slider-subrow">
+            <span class="sub-label">海图填充透明度</span>
+            <input type="range" id="gis-opacity-slider" min="5" max="50" step="5" value="18">
+          </div>
+
+          <input type="checkbox" id="layer-facilities" checked style="display:none;">
+        </div>
+
+        <!-- 蒲福风级与海浪图例 -->
+        <div class="dock-legend">
+          <div class="legend-title">蒲福风级 (m/s)</div>
+          <div class="legend-wind-bar">
+            <span style="background:#38bdf8" title="微风 <6"></span>
+            <span style="background:#4ade80" title="清风 6-12"></span>
+            <span style="background:#facc15" title="强风 12-18"></span>
+            <span style="background:#fb923c" title="大风 18-24"></span>
+            <span style="background:#ef4444" title="烈风/台风 ≥24"></span>
+          </div>
+          <div class="legend-labels">
+            <span>&lt;6</span>
+            <span>12</span>
+            <span>18</span>
+            <span>24+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 悬浮海面天气探测仪卡片 (Weather Picker) -->
+    <div id="weather-picker-card" class="glass-card weather-picker-card" hidden>
+      <div class="card-header">
+        <span class="card-title">海面气象点位探针</span>
+        <button type="button" class="card-close" id="weather-picker-close">×</button>
+      </div>
+      <div class="card-coords" id="picker-coords">-95.000°W, 29.500°N</div>
+      <div class="card-grid">
+        <div class="card-cell">
+          <span class="cell-label">瞬时风速</span>
+          <strong class="cell-val text-cyan" id="picker-wind-spd">-- m/s</strong>
+          <span class="cell-sub" id="picker-wind-knots">-- 节</span>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">来风方向</span>
+          <strong class="cell-val" id="picker-wind-dir">--°</strong>
+          <span class="cell-sub text-dim" id="picker-compass">--</span>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">海面气压</span>
+          <strong class="cell-val text-purple" id="picker-pressure">-- hPa</strong>
+          <span class="cell-sub" id="picker-pressure-trend">稳定</span>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">有效浪高</span>
+          <strong class="cell-val text-green" id="picker-wave">-- m</strong>
+          <span class="cell-sub">风浪模型</span>
+        </div>
+      </div>
+      <div class="card-foot">
+        <span>空间置信度: <strong id="picker-confidence">95%</strong></span>
+        <span>最近测站: <strong id="picker-station-dist">-- km</strong></span>
+      </div>
+    </div>
+
+    <!-- 悬浮船舶详情卡片 (Vessel Inspector) -->
+    <div id="vessel-card" class="glass-card vessel-card" hidden>
+      <div class="card-header">
+        <span class="vessel-type-badge" id="vessel-card-class">TANKER</span>
+        <strong class="vessel-name-title" id="vessel-card-name">FLANDERS PIONEER</strong>
+        <button type="button" class="card-close" id="vessel-card-close">×</button>
+      </div>
+      <div class="vessel-meta" id="vessel-card-mmsi">MMSI 205104000 · 坐标: -95.130, 29.738</div>
+      <div class="card-grid">
+        <div class="card-cell">
+          <span class="cell-label">航速 SOG</span>
+          <strong class="cell-val" id="vessel-card-sog">0.0 节</strong>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">航向 COG</span>
+          <strong class="cell-val" id="vessel-card-cog">210°</strong>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">船舶尺寸</span>
+          <strong class="cell-val" id="vessel-card-size">230m × 36m</strong>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">吃水 / 状态</span>
+          <strong class="cell-val" id="vessel-card-draft">8.4m · 在泊</strong>
+        </div>
+      </div>
+      <div class="card-storm-info" id="vessel-card-storm-box" hidden>
+        <span>距台风中心:</span>
+        <strong id="vessel-card-storm-dist">-- km</strong>
+      </div>
+      <div class="card-spatial-region" id="vessel-card-region-box">
+        <span class="region-badge-icon">📍</span>
+        <span class="region-badge-label">所处水域:</span>
+        <strong class="region-badge-name" id="vessel-card-region">休斯顿主航道第 3 航槽</strong>
+      </div>
+      <div class="card-actions track-actions-container">
+        <div class="track-unified-actions">
+          <button type="button" class="btn-track-replay" id="btn-show-track">🗺️ 绘制全周期连续航迹</button>
+          <button type="button" class="btn-track-cruise" id="btn-cruise-track">▶ 航迹连续平滑巡航</button>
+        </div>
+        <div class="track-unified-hint" id="track-unified-hint">
+          <span>✦ 60FPS 样条平滑 · 统一生命周期连续航迹</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 悬浮海事空间要素抽屉 (GIS Feature Inspector Drawer) -->
+    <div id="gis-drawer" class="glass-card gis-drawer-card" hidden>
+      <div class="card-header">
+        <div class="gis-header-left">
+          <span class="gis-type-badge" id="gis-drawer-badge">⚓ 法定防风锚地</span>
+          <strong class="gis-title" id="gis-drawer-title">Galveston Fairway Anchorage A</strong>
+        </div>
+        <button type="button" class="card-close" id="gis-drawer-close">×</button>
+      </div>
+      <div class="gis-enc-meta" id="gis-drawer-enc">ENC 图幅: US5HOUEC.000 · 官方管辖: USCG / NOAA</div>
+
+      <!-- 海事参数卡片 -->
+      <div class="card-grid gis-meta-grid">
+        <div class="card-cell">
+          <span class="cell-label">设计维护水深</span>
+          <strong class="cell-val text-cyan" id="gis-drawer-depth">13.7m (45ft)</strong>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">通航/避风等级</span>
+          <strong class="cell-val text-yellow" id="gis-drawer-grade">一级防风避难水域</strong>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">要素分类代码</span>
+          <strong class="cell-val" id="gis-drawer-id">ANCH_01</strong>
+        </div>
+        <div class="card-cell">
+          <span class="cell-label">管理限制条例</span>
+          <strong class="cell-val text-dim" id="gis-drawer-rules">限速 8 节 · 候泊抛锚</strong>
+        </div>
+      </div>
+
+      <!-- 区内船舶实时拓扑感知面板 -->
+      <div class="gis-vessels-section">
+        <div class="gis-vessels-header">
+          <span class="gis-vessels-title">🚢 当前时刻区内船舶态势</span>
+          <span class="gis-vessels-count" id="gis-drawer-vessels-count">共 0 艘</span>
+        </div>
+        <div class="gis-vessels-subsummary" id="gis-drawer-vessels-subsummary">
+          <span>在泊/锚泊: <b id="gis-drawer-stopped-count">0</b> 艘</span>
+          <span>在航作业: <b id="gis-drawer-moving-count">0</b> 艘</span>
+        </div>
+        <div class="gis-vessels-list" id="gis-drawer-vessels-list">
+          <!-- 动态注入区内船舶小卡片 -->
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="btn-gis-focus" id="btn-gis-focus">🎯 缩放并聚焦该水域全廓</button>
+      </div>
+    </div>
+
+    <!-- 底部 Global Fishing Watch (GFW) 风格全周期自由交互时间轴 -->
+    <div class="gfw-timeline-panel timeline-container" id="gfw-timeline-panel">
+      <!-- 顶部控制行：播放/步退/步进/倍速/当前时刻/自定义选择器 -->
+      <div class="gfw-timeline-top">
+        <div class="gfw-controls-left">
+          <button type="button" id="btn-step-prev" class="gfw-btn" title="平滑后退">⏮</button>
+          <button type="button" id="btn-timeline-play" class="gfw-btn gfw-btn-play">
+            <span class="play-icon">▶</span>
+            <span class="play-text">播放</span>
+          </button>
+          <button type="button" id="btn-step-next" class="gfw-btn" title="平滑前进">⏭</button>
+
+          <!-- 播放倍速 -->
+          <div class="gfw-speed-group">
+            <button type="button" class="gfw-speed-btn active" data-speed="2500">1x</button>
+            <button type="button" class="gfw-speed-btn" data-speed="1200">2x</button>
+            <button type="button" class="gfw-speed-btn" data-speed="600">4x</button>
+          </div>
+
+          <!-- 统一全域连续时空流标识 (彻底消除小时碎片割裂，统一未来任意新数据自适应接入标准) -->
+          <div class="gfw-granularity-group">
+            <span class="gfw-continuous-stream-badge" title="高精自适应时空无级连续推进">⚡ 全域连续流</span>
+          </div>
+
+          <!-- 当前精确选定时分指示 -->
+          <div class="gfw-current-display">
+            <span class="gfw-clock-icon">🕒</span>
+            <strong id="gfw-current-time-text">2024-07-08 12:00 UTC</strong>
+            <span class="gfw-stage-tag" id="gfw-stage-tag">台风眼登陆高峰</span>
+          </div>
+        </div>
+
+        <div class="gfw-controls-right">
+          <!-- 自定义时间精确选择器 -->
+          <div class="gfw-custom-picker">
+            <span class="picker-label">任意时间挑选:</span>
+            <input type="datetime-local" id="gfw-datetime-picker" value="2024-07-08T12:00" min="2024-07-06T00:00" max="2024-07-10T23:00">
+            <button type="button" id="btn-apply-custom-time" class="gfw-btn-apply">跳转</button>
+          </div>
+
+          <!-- 统一全域连续时空视窗标识 (统一标准，不分单日，兼容任意未来新数据集) -->
+          <div class="gfw-unified-window-badge" id="gfw-presets-container">
+            <span class="window-dot"></span>
+            <span class="window-text" id="gfw-window-text">全域时空连续观测视窗</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间 GFW 标志性时序活动直方图轨道与自由拖拽游标 (Scrubber) -->
+      <div class="gfw-track-container" id="gfw-track-container">
+        <!-- 悬浮时间提示 Tooltip -->
+        <div class="gfw-hover-tooltip" id="gfw-hover-tooltip" hidden>
+          <span id="tooltip-time">2024-07-08 12:00 UTC</span>
+          <strong id="tooltip-wind">极大风速 24.5 m/s · 988 hPa</strong>
+        </div>
+
+        <!-- 120 小时细柱直方图轨道 -->
+        <div class="gfw-histogram-track" id="gfw-histogram-track">
+          <!-- 动态注入各小时的直方图条 -->
+        </div>
+
+        <!-- 播放进度遮罩层 (已播放时段高亮) -->
+        <div class="gfw-progress-fill" id="gfw-progress-fill"></div>
+
+        <!-- GFW 可拖拽时间游标手柄 (Scrubber Needle & Handle) -->
+        <div class="gfw-scrubber-needle" id="gfw-scrubber-needle">
+          <div class="gfw-needle-handle" title="按住左右拖拽任意选择时间">
+            <span class="handle-line"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部日期刻度尺 (Date Tick Labels) 动态挂载 -->
+      <div class="gfw-scale-ticks" id="gfw-scale-ticks"></div>
+    </div>
+  </main>
+
+  <!-- 态势研判简报与数据审计指挥抽屉 (Situation Intelligence Briefing Drawer) -->
+  <aside class="briefing-drawer" id="briefing-drawer" aria-label="态势研判简报抽屉" hidden>
+    <div class="briefing-drawer-inner">
+      <!-- 抽屉顶部工具栏 -->
+      <div class="briefing-drawer-header">
+        <div class="briefing-title-group">
+          <div class="briefing-badge">
+            <span class="badge-dot"></span>
+            <span>多源协同研判中心</span>
+          </div>
+          <h2 class="briefing-title">海域态势研判简报</h2>
+          <span class="briefing-subtitle" id="briefing-region-sub">海区情报自适应审计 · 跨模态时空融合研判</span>
+        </div>
+        <div class="briefing-actions">
+          <button type="button" class="btn-briefing-action btn-copy-briefing" id="btn-copy-briefing" title="一键复制 Markdown 格式报告">
+            <span>📋</span> 复制 Markdown
+          </button>
+          <button type="button" class="btn-briefing-action btn-print-briefing" id="btn-print-briefing" title="打印或导出专业 PDF 报告">
+            <span>🖨️</span> 打印 / 导出 PDF
+          </button>
+          <button type="button" class="btn-briefing-close" id="btn-close-briefing" title="关闭简报抽屉">✕</button>
+        </div>
+      </div>
+
+      <!-- 简报主体区域 (可滚动) -->
+      <div class="briefing-drawer-content" id="briefing-drawer-content">
+        <!-- 加载与智能体工作流动画 -->
+        <div class="briefing-loading-state" id="briefing-loading-state" hidden>
+          <div class="briefing-spinner"></div>
+          <div class="briefing-pipeline">
+            <div class="pipeline-step active" id="pipeline-step-1">
+              <span class="step-icon">🔍</span>
+              <div class="step-text">
+                <strong>模态审计智能体</strong>
+                <span>全面体检 AIS、遥感切片、测站气象与 GIS 底座…</span>
+              </div>
+            </div>
+            <div class="pipeline-step" id="pipeline-step-2">
+              <span class="step-icon">⚡</span>
+              <div class="step-text">
+                <strong>时空交叉校验智能体</strong>
+                <span>关联匹配遥感暗标，融合风浪流场态势…</span>
+              </div>
+            </div>
+            <div class="pipeline-step" id="pipeline-step-3">
+              <span class="step-icon">📑</span>
+              <div class="step-text">
+                <strong>研判编排智能体</strong>
+                <span>自适应评级与度量生成，输出行动建议…</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 简报展示容器 -->
+        <div class="briefing-display" id="briefing-display">
+          <!-- 1. 数据充足度审计卡片 (Data Sufficiency & Modality Health) -->
+          <div class="briefing-section briefing-audit-section">
+            <div class="audit-header-row">
+              <div class="audit-grade-box" id="audit-grade-box">
+                <div class="grade-letter" id="briefing-grade-letter">A</div>
+                <div class="grade-info">
+                  <strong id="briefing-grade-title">A 级 · 全维态势感知</strong>
+                  <span id="briefing-confidence-text">置信度：极高 · 四模态完备融合</span>
+                </div>
+              </div>
+              <div class="audit-meta-box">
+                <div class="meta-item"><span>报告编号</span><strong id="briefing-report-id">--</strong></div>
+                <div class="meta-item"><span>生成时间</span><strong id="briefing-generated-at">--</strong></div>
+                <div class="meta-item"><span>研判海区</span><strong id="briefing-region-name">--</strong></div>
+              </div>
+            </div>
+
+            <!-- 四模态健康度体检卡片网格 -->
+            <div class="modalities-grid" id="briefing-modalities-grid">
+              <!-- 动态渲染 AIS、遥感、气象、GIS -->
+            </div>
+
+            <!-- 审计限度声明 / 降级说明条 -->
+            <div class="audit-limitations-box" id="briefing-limitations-box">
+              <div class="limitations-badge">⚠️ 态势研判边界与限度声明</div>
+              <ul class="limitations-list" id="briefing-limitations-list">
+                <!-- 动态渲染声明 -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- 2. 态势核心量化 KPI 概览 -->
+          <div class="briefing-section briefing-kpi-section">
+            <h3 class="section-title">📊 态势量化关键指标 (Key Metrics)</h3>
+            <div class="briefing-kpi-grid" id="briefing-kpi-grid">
+              <!-- 动态注入 -->
+            </div>
+          </div>
+
+          <!-- 3. 专业研判正文 (Markdown 渲染) -->
+          <div class="briefing-section briefing-markdown-section">
+            <h3 class="section-title">📑 综合研判与行动指引</h3>
+            <div class="briefing-markdown-body" id="briefing-markdown-body">
+              <!-- 动态渲染 Markdown -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <script src="/assets/leaflet-1.9.4.js"></script>
+  <script src="/assets/wind-particles.js?v=2.4.2"></script>
+  <script src="/assets/wind-map.js?v=4.2.0"></script>
+</body>
+</html>

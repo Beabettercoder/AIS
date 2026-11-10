@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>海事态势数据立方体</title><style>
+:root{font-family:"Segoe UI","Microsoft YaHei",sans-serif;color:#17324d;background:#f3f7fa}*{box-sizing:border-box}
+body{margin:0}header{padding:22px 5vw;color:white;background:linear-gradient(120deg,#173c63,#197c88)}
+header h1{margin:0 0 6px;font-size:25px}header p{margin:0;opacity:.82}.layout{display:grid;grid-template-columns:330px 1fr;gap:18px;padding:20px 5vw}
+.panel{background:#fff;border:1px solid #d8e4ec;border-radius:16px;padding:18px;box-shadow:0 8px 24px #17324d12}h2{font-size:17px;margin:0 0 15px}
+label{display:block;margin:10px 0 5px;font-size:13px;color:#567}select,input,button{width:100%;padding:10px;border:1px solid #c9d8e2;border-radius:9px;background:#fff}
+button{margin-top:15px;background:#0b7480;color:#fff;border:0;font-weight:700;cursor:pointer}.status{margin-top:12px;font-size:13px;line-height:1.6}.cards{display:grid;gap:12px}.card{border:1px solid #dbe6ed;border-radius:12px;padding:14px;cursor:pointer}.card:hover{border-color:#2c8992}.meta{font-size:12px;color:#607586;margin-top:7px}.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.tag{font-size:11px;padding:4px 8px;border-radius:999px;background:#daf0ec}.missing{background:#f7e9d8}.evidence{margin-top:12px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:8px;border-bottom:1px solid #edf1f4;vertical-align:top}pre{white-space:pre-wrap;font-size:11px}@media(max-width:850px){.layout{grid-template-columns:1fr}}
+</style></head><body><header><h1>任务自适应海事态势数据立方体</h1><p>按研究区域与真实 UTC 时间组织 AIS、GIS、遥感、气象和事件证据，不使用小时代表点替代原始观测。</p></header>
+<main class="layout"><section class="panel"><h2>构建与筛选</h2><label>研究区域</label><select id="region"></select><label>开始时间 UTC（可留空自动推导）</label><input id="start" placeholder="2024-07-06T00:00:00Z"><label>结束时间 UTC</label><input id="end" placeholder="2024-07-07T00:00:00Z"><label>任务类型</label><input id="task" value="general_situation"><button id="build">构建 / 增量更新</button><div id="status" class="status"></div></section>
+<section><div class="panel"><h2>态势单元</h2><div id="units" class="cards"></div></div><div id="detail" class="panel" style="margin-top:18px;display:none"></div></section></main>
+<script src="/assets/situation-cube.js"></script></body></html>

@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAR–AIS 困难组交互式真值核验与快速标注工作台</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --border: #1f2937;
+      --border-focus: #3b82f6;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #ef4444;
+      --accent-purple: #8b5cf6;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* 顶部导航与仪表盘 */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+    .header-title .tag {
+      background: #1e3a8a;
+      color: #60a5fa;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+    }
+    .stat-pill {
+      background: #1f2937;
+      border: 1px solid #374151;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stat-pill span.num {
+      font-weight: 700;
+      color: #fff;
+    }
+    .progress-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 180px;
+    }
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .progress-bar-bg {
+      background: #374151;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .reviewer-input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .reviewer-input-group input {
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      width: 110px;
+      font-size: 12px;
+    }
+
+    /* 主体三栏布局 */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 280px 1fr 340px;
+      overflow: hidden;
+    }
+
+    /* 左侧栏：目标选择列表 */
+    aside.sidebar {
+      background: #0d131f;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .filter-pills {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .filter-btn {
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .target-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .target-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .target-item:hover {
+      border-color: #4b5563;
+      background: #1e293b;
+    }
+    .target-item.selected {
+      border-color: var(--border-focus);
+      background: #1e3a8a33;
+      box-shadow: 0 0 0 1px var(--border-focus);
+    }
+    .target-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .target-header .id {
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: #fff;
+    }
+    .badges {
+      display: flex;
+      gap: 4px;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .badge-diff { background: #7c2d12; color: #fdba74; }
+    .badge-dark { background: #451a03; color: #fde047; }
+    .badge-changed { background: #831843; color: #f472b6; }
+    .badge-cand { background: #1e293b; color: #94a3b8; }
+    .target-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .status-tag {
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-unreviewed { color: #9ca3af; }
+    .status-confirmed { color: var(--accent-green); }
+    .status-nomatch { color: var(--accent-amber); }
+    .status-ambiguous { color: var(--accent-purple); }
+
+    /* 中间栏：研判看板与雷达图 */
+    section.canvas-area {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 16px 20px;
+      gap: 16px;
+    }
+    .target-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 12px 18px;
+      border-radius: 8px;
+    }
+    .target-title-bar h2 {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .coord-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      background: #1f2937;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* 空间分布图面板 */
+    .radar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #93c5fd;
+      display: flex;
+      justify-content: space-between;
+    }
+    .radar-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      background: #060911;
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    svg.radar-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 三算法对比卡片 */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .method-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .method-card.winner {
+      border-color: #3b82f6;
+      background: #1e3a8a1a;
+    }
+    .method-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .method-choice {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      font-family: var(--font-mono);
+    }
+    .method-detail {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* 候选船舶明细表 */
+    .candidates-table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    table.cands-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    table.cands-table th, table.cands-table td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    table.cands-table th {
+      background: #1f2937;
+      color: #9ca3af;
+      font-weight: 600;
+    }
+    table.cands-table tr:hover {
+      background: #1e293b;
+      cursor: pointer;
+    }
+    table.cands-table tr.selected-row {
+      background: #1e3a8a44;
+      font-weight: 700;
+    }
+    .mmsi-cell {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: #60a5fa;
+    }
+
+    /* 右侧栏：快速标注操作台 */
+    aside.actions-panel {
+      background: #0d131f;
+      border-left: 1px solid var(--border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .panel-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #9ca3af;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+    .action-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .action-btn {
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .btn-match {
+      background: #065f46;
+      color: #a7f3d0;
+      border-color: #047857;
+    }
+    .btn-match:hover { background: #047857; }
+    .btn-nomatch {
+      background: #78350f;
+      color: #fde68a;
+      border-color: #92400e;
+    }
+    .btn-nomatch:hover { background: #92400e; }
+    .btn-falsealarm {
+      background: #831843;
+      color: #fbcfe8;
+      border-color: #9d174d;
+    }
+    .btn-falsealarm:hover { background: #9d174d; }
+    .btn-ambiguous {
+      background: #3730a3;
+      color: #c7d2fe;
+      border-color: #4338ca;
+    }
+    .btn-ambiguous:hover { background: #4338ca; }
+    .key-hint {
+      font-size: 11px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+    }
+    .selected-choice-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .selected-choice-val {
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: #60a5fa;
+    }
+    textarea.notes-input {
+      width: 100%;
+      height: 80px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      color: #fff;
+      font-size: 12px;
+      resize: none;
+    }
+    textarea.notes-input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+    }
+    .save-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .save-btn:hover { background: var(--primary-hover); }
+    .nav-btn-group {
+      display: flex;
+      gap: 8px;
+    }
+    .nav-btn {
+      flex: 1;
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: #fff;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .nav-btn:hover { background: #374151; }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部状态栏 -->
+  <header>
+    <div class="header-title">
+      <h1>🛰️ SAR–AIS 困难组交互式真值核验工作台</h1>
+      <span class="tag">Houston–Galveston S02 验证景</span>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-pill">
+        <span>困难组:</span>
+        <span class="num" id="statDifficult">0</span>
+      </div>
+      <div class="stat-pill">
+        <span>算法分歧:</span>
+        <span class="num" id="statChanged">0</span>
+      </div>
+      <div class="stat-pill">
+        <span>疑似暗船:</span>
+        <span class="num" id="statZero">0</span>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-text">
+          <span>真值核验进度</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+      </div>
+
+      <div class="reviewer-input-group">
+        <span>审核人:</span>
+        <input type="text" id="reviewerName" value="Reviewer-1">
+      </div>
+    </div>
+  </header>
+
+  <!-- 三栏主体 -->
+  <main>
+    <!-- 左侧列表 -->
+    <aside class="sidebar">
+      <div class="filter-pills">
+        <button class="filter-btn active" data-filter="all">全部 (39)</button>
+        <button class="filter-btn" data-filter="difficult">困难组 (≥2)</button>
+        <button class="filter-btn" data-filter="changed">算法分歧</button>
+        <button class="filter-btn" data-filter="zero">疑似暗船 (0)</button>
+        <button class="filter-btn" data-filter="unreviewed">待审核</button>
+      </div>
+      <div class="target-list" id="targetList">
+        <!-- 动态渲染目标列表 -->
+      </div>
+    </aside>
+
+    <!-- 中间主视图 -->
+    <section class="canvas-area">
+      <div class="target-title-bar">
+        <h2>
+          <span id="currentId">S02-CFAR-0001</span>
+          <span class="coord-tag" id="currentCoord">29.5978°N, -94.9131°W</span>
+        </h2>
+        <div id="currentBadges"></div>
+      </div>
+
+      <!-- 交互式雷达相对空间图 -->
+      <div class="radar-card">
+        <div class="card-title">
+          <span>📡 相对空间分布图 (以 SAR 雷达回波中心为原点，网格标尺 100m/250m/500m)</span>
+          <span id="radarScaleHint">范围: 半径 500 米</span>
+        </div>
+        <div class="radar-container" id="radarContainer">
+          <svg class="radar-svg" id="radarSvg" viewBox="-300 -300 600 600">
+            <!-- 动态绘制同心圆与坐标 -->
+          </svg>
+        </div>
+      </div>
+
+      <!-- 3 种主流算法决策对照卡片 -->
+      <div class="comparison-grid">
+        <div class="method-card" id="cardNN">
+          <div class="method-header">
+            <span>1. 独立最近邻 (NN500)</span>
+            <span class="method-choice" id="mNN_choice">--</span>
+          </div>
+          <div class="method-detail" id="mNN_detail">距离: --</div>
+        </div>
+        <div class="method-card" id="cardNeighbour">
+          <div class="method-header">
+            <span>2. 邻域整合 (Relekar 2021)</span>
+            <span class="method-choice" id="mNeighbour_choice">--</span>
+          </div>
+          <div class="method-detail" id="mNeighbour_detail">尺寸门禁: 长度/距离</div>
+        </div>
+        <div class="method-card winner" id="cardWorld">
+          <div class="method-header">
+            <span>3. 多特征全局拒绝 (World-V0)</span>
+            <span class="method-choice" id="mWorld_choice">--</span>
+          </div>
+          <div class="method-detail" id="mWorld_detail">代价: -- | 置信 Margin: --</div>
+        </div>
+      </div>
+
+      <!-- 候选船舶深度列表 -->
+      <div class="candidates-table-card">
+        <div class="card-title">
+          <span>⚓ 500 米内 AIS 候选船舶详细清单 (共 <span id="candCount">0</span> 艘)</span>
+          <span style="font-size: 11px; color: var(--text-muted);">提示：直接点击任意一行即可选定该船</span>
+        </div>
+        <table class="cands-table">
+          <thead>
+            <tr>
+              <th>顺位</th>
+              <th>MMSI</th>
+              <th>船名</th>
+              <th>船型</th>
+              <th>距离 (米)</th>
+              <th>时间插值间隔</th>
+              <th>CFAR 强度</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="candsTableBody">
+            <!-- 动态表格 -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 右侧标注面板 -->
+    <aside class="actions-panel">
+      <div class="panel-section-title">真值核验裁定</div>
+
+      <div class="selected-choice-box">
+        <div style="font-size: 11px; color: var(--text-muted);">当前拟定真值:</div>
+        <div class="selected-choice-val" id="selectedChoiceVal">未选择</div>
+        <div style="font-size: 11px; color: var(--text-muted);" id="selectedChoiceDesc">请点击左侧候选船或下方快捷按钮</div>
+      </div>
+
+      <div class="panel-section-title">快捷核验动作</div>
+      <div class="action-btn-group">
+        <button class="action-btn btn-match" id="btnConfirmMatch">
+          <span>✔ 确认选定 MMSI 匹配</span>
+          <span class="key-hint">Enter</span>
+        </button>
+        <button class="action-btn btn-nomatch" id="btnMarkNoMatch">
+          <span>🚫 确认真实暗船 / 无匹配</span>
+          <span class="key-hint">N</span>
+        </button>
+        <button class="action-btn btn-falsealarm" id="btnMarkFalseAlarm">
+          <span>⚠️ 标为雷达杂波 / 离岸设施</span>
+          <span class="key-hint">F</span>
+        </button>
+        <button class="action-btn btn-ambiguous" id="btnMarkAmbiguous">
+          <span>❓ 模糊存疑 (Ambiguous)</span>
+          <span class="key-hint">A</span>
+        </button>
+      </div>
+
+      <div class="panel-section-title">核验依据与备注 (Notes)</div>
+      <textarea class="notes-input" id="notesInput" placeholder="输入核验依据（如：时间间隔仅68秒且距离最近、密集泊位排他确认、500米无AIS等）..."></textarea>
+
+      <button class="save-btn" id="btnSaveSubmit">
+        <span>💾 确认提交并保存</span>
+        <span class="key-hint">Ctrl+S</span>
+      </button>
+
+      <div class="nav-btn-group">
+        <button class="nav-btn" id="btnPrev">◀ 上一个</button>
+        <button class="nav-btn" id="btnNext">下一个 ▶</button>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    let allTargets = [];
+    let currentIndex = 0;
+    let currentFilter = "all";
+    let selectedMmsiChoice = "";
+    let selectedStatusChoice = "UNREVIEWED";
+
+    async function loadData() {
+      try {
+        const res = await fetch("/sar-verification/targets");
+        if (!res.ok) throw new Error("加载数据失败");
+        const data = await res.json();
+        allTargets = data.targets || [];
+        updateStats(data.stats || {});
+        renderTargetList();
+        if (allTargets.length > 0) {
+          selectTarget(0);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("无法从服务端获取核验数据，请确保 API 正常运行");
+      }
+    }
+
+    function updateStats(stats) {
+      document.getElementById("statDifficult").textContent = stats.difficult_count || 0;
+      document.getElementById("statChanged").textContent = stats.changed_count || 0;
+      document.getElementById("statZero").textContent = stats.zero_count || 0;
+
+      const total = stats.total || 39;
+      const reviewed = stats.reviewed || 0;
+      const pct = Math.round((reviewed / total) * 100);
+      document.getElementById("progressPercent").textContent = `${reviewed}/${total} (${pct}%)`;
+      document.getElementById("progressBar").style.width = `${pct}%`;
+    }
+
+    function renderTargetList() {
+      const container = document.getElementById("targetList");
+      container.innerHTML = "";
+
+      const filtered = allTargets.filter(t => {
+        if (currentFilter === "difficult") return t.candidate_count >= 2;
+        if (currentFilter === "changed") return t.is_changed;
+        if (currentFilter === "zero") return t.candidate_count === 0;
+        if (currentFilter === "unreviewed") return !t.manual_review_status || t.manual_review_status === "UNREVIEWED";
+        return true;
+      });
+
+      filtered.forEach((t) => {
+        const originalIdx = allTargets.findIndex(x => x.sar_target_id === t.sar_target_id);
+        const item = document.createElement("div");
+        item.className = `target-item ${originalIdx === currentIndex ? "selected" : ""}`;
+        item.onclick = () => selectTarget(originalIdx);
+
+        let statusClass = "status-unreviewed";
+        let statusText = "待审核";
+        if (t.manual_review_status === "CONFIRMED") {
+          if (t.manual_truth_mmsi_or_NO_MATCH === "NO_MATCH") {
+            statusClass = "status-nomatch";
+            statusText = "暗船/无匹配";
+          } else {
+            statusClass = "status-confirmed";
+            statusText = `匹配: ${t.manual_truth_mmsi_or_NO_MATCH}`;
+          }
+        } else if (t.manual_review_status === "AMBIGUOUS") {
+          statusClass = "status-ambiguous";
+          statusText = "存疑";
+        } else if (t.manual_review_status === "FALSE_ALARM") {
+          statusClass = "status-nomatch";
+          statusText = "杂波设施";
+        }
+
+        item.innerHTML = `
+          <div class="target-header">
+            <span class="id">${t.sar_target_id}</span>
+            <div class="badges">
+              ${t.candidate_count >= 2 ? `<span class="badge badge-diff">${t.candidate_count}候选</span>` : ""}
+              ${t.candidate_count === 0 ? `<span class="badge badge-dark">0候选</span>` : ""}
+              ${t.is_changed ? `<span class="badge badge-changed">分歧</span>` : ""}
+            </div>
+          </div>
+          <div class="target-meta">
+            <span class="status-tag ${statusClass}">● ${statusText}</span>
+            <span>(${t.sar_lat.toFixed(3)}, ${t.sar_lon.toFixed(3)})</span>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function selectTarget(idx) {
+      if (idx < 0 || idx >= allTargets.length) return;
+      currentIndex = idx;
+      const t = allTargets[idx];
+
+      // 更新选中状态
+      document.querySelectorAll(".target-item").forEach((el, i) => {
+        el.classList.toggle("selected", el.querySelector(".id")?.textContent === t.sar_target_id);
+      });
+
+      document.getElementById("currentId").textContent = t.sar_target_id;
+      document.getElementById("currentCoord").textContent = `${t.sar_lat.toFixed(4)}°N, ${t.sar_lon.toFixed(4)}°W`;
+
+      // 顶部徽章
+      const bContainer = document.getElementById("currentBadges");
+      bContainer.innerHTML = "";
+      if (t.candidate_count >= 2) bContainer.innerHTML += `<span class="badge badge-diff">密集困难组 (候选数 ${t.candidate_count})</span> `;
+      if (t.candidate_count === 0) bContainer.innerHTML += `<span class="badge badge-dark">无 AIS 覆盖 (疑似暗船)</span> `;
+      if (t.is_changed) bContainer.innerHTML += `<span class="badge badge-changed">算法决策分歧</span> `;
+
+      // 更新算法卡片
+      document.getElementById("mNN_choice").textContent = t.methods.nn500.mmsi || "NO_MATCH";
+      document.getElementById("mNN_detail").textContent = t.methods.nn500.distance_m ? `距离: ${t.methods.nn500.distance_m}m | 船名: ${t.methods.nn500.vessel_name}` : "500m内无AIS点";
+
+      document.getElementById("mNeighbour_choice").textContent = t.methods.neighbour.mmsi || "NO_MATCH";
+      document.getElementById("mNeighbour_detail").textContent = t.methods.neighbour.distance_m ? `距离: ${t.methods.neighbour.distance_m}m | 尺寸约束匹配` : "未通过邻域尺寸门限";
+
+      const w = t.methods.world_v0;
+      document.getElementById("mWorld_choice").textContent = w.mmsi || w.decision || "NO_MATCH";
+      document.getElementById("mWorld_detail").textContent = w.mmsi ? `代价: ${w.cost} | 置信差 Margin: ${w.margin} | 船名: ${w.vessel_name}` : "触发全局代价拒绝";
+
+      // 候选表格渲染
+      document.getElementById("candCount").textContent = t.candidate_count;
+      const tbody = document.getElementById("candsTableBody");
+      tbody.innerHTML = "";
+
+      if (t.candidates.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">500 米内未检索到任何 AIS 船舶点，极大可能为真实暗船（Dark Vessel）或离岸无 AIS 设施</td></tr>`;
+      } else {
+        t.candidates.forEach((c) => {
+          const tr = document.createElement("tr");
+          tr.onclick = () => selectCandidate(c.mmsi, c.vessel_name);
+          tr.innerHTML = `
+            <td>#${c.candidate_rank}</td>
+            <td class="mmsi-cell">${c.mmsi}</td>
+            <td>${c.vessel_name}</td>
+            <td>${c.vessel_class}</td>
+            <td><strong style="color: #60a5fa;">${c.distance_m}</strong> m</td>
+            <td>${c.gap_seconds} s</td>
+            <td>${c.cfar_z}</td>
+            <td><button style="padding: 2px 6px; font-size: 11px; background: #2563eb; color: #fff; border: none; border-radius: 3px; cursor: pointer;">选定</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // 初始化右侧打标状态
+      if (t.manual_truth_mmsi_or_NO_MATCH) {
+        selectedMmsiChoice = t.manual_truth_mmsi_or_NO_MATCH;
+        selectedStatusChoice = t.manual_review_status || "CONFIRMED";
+        updateDecisionBox(selectedMmsiChoice, selectedStatusChoice, "已有核验记录");
+      } else if (t.candidate_count === 0) {
+        selectedMmsiChoice = "NO_MATCH";
+        selectedStatusChoice = "CONFIRMED";
+        updateDecisionBox("NO_MATCH", "CONFIRMED", "系统预判：500米无AIS覆盖，推荐标为真实暗船");
+      } else if (t.methods.world_v0.mmsi) {
+        selectedMmsiChoice = t.methods.world_v0.mmsi;
+        selectedStatusChoice = "CONFIRMED";
+        updateDecisionBox(selectedMmsiChoice, "CONFIRMED", "系统预判：采用多特征全局最优解");
+      } else {
+        selectedMmsiChoice = "";
+        selectedStatusChoice = "UNREVIEWED";
+        updateDecisionBox("未选择", "UNREVIEWED", "请点击候选船或选择决策");
+      }
+
+      // 绘制雷达图
+      drawRadar(t);
+    }
+
+    function selectCandidate(mmsi, name) {
+      selectedMmsiChoice = mmsi;
+      selectedStatusChoice = "CONFIRMED";
+      updateDecisionBox(mmsi, "CONFIRMED", `选定船舶: ${name} (MMSI: ${mmsi})`);
+      document.querySelectorAll("#candsTableBody tr").forEach(tr => {
+        tr.classList.toggle("selected-row", tr.querySelector(".mmsi-cell")?.textContent === mmsi);
+      });
+    }
+
+    function updateDecisionBox(val, status, desc) {
+      document.getElementById("selectedChoiceVal").textContent = val || "未选择";
+      document.getElementById("selectedChoiceDesc").textContent = desc || "";
+    }
+
+    function drawRadar(t) {
+      const svg = document.getElementById("radarSvg");
+      svg.innerHTML = "";
+
+      // 绘制中心坐标轴与测距同心圆 (半径500m 对应 250px)
+      const scale = 250 / 500; // px per meter
+      [100, 250, 500].forEach(r => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", "0");
+        circle.setAttribute("cy", "0");
+        circle.setAttribute("r", (r * scale).toString());
+        circle.setAttribute("fill", "none");
+        circle.setAttribute("stroke", "#1f2937");
+        circle.setAttribute("stroke-dasharray", "4,4");
+        svg.appendChild(circle);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", "5");
+        text.setAttribute("y", (-r * scale + 12).toString());
+        text.setAttribute("fill", "#6b7280");
+        text.setAttribute("font-size", "10");
+        text.textContent = `${r}m`;
+        svg.appendChild(text);
+      });
+
+      // 十字准星
+      const axisX = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      axisX.setAttribute("x1", "-280"); axisX.setAttribute("y1", "0");
+      axisX.setAttribute("x2", "280"); axisX.setAttribute("y2", "0");
+      axisX.setAttribute("stroke", "#1f2937");
+      svg.appendChild(axisX);
+
+      const axisY = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      axisY.setAttribute("x1", "0"); axisY.setAttribute("y1", "-280");
+      axisY.setAttribute("x2", "0"); axisY.setAttribute("y2", "280");
+      axisY.setAttribute("stroke", "#1f2937");
+      svg.appendChild(axisY);
+
+      // 中心点 (SAR Detection)
+      const centerDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      centerDot.setAttribute("cx", "0");
+      centerDot.setAttribute("cy", "0");
+      centerDot.setAttribute("r", "6");
+      centerDot.setAttribute("fill", "#ef4444");
+      svg.appendChild(centerDot);
+
+      const centerLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      centerLabel.setAttribute("x", "10");
+      centerLabel.setAttribute("y", "4");
+      centerLabel.setAttribute("fill", "#ef4444");
+      centerLabel.setAttribute("font-size", "11");
+      centerLabel.setAttribute("font-weight", "bold");
+      centerLabel.textContent = "SAR 回波中心";
+      svg.appendChild(centerLabel);
+
+      // 绘制各候选船舶
+      t.candidates.forEach((c, idx) => {
+        // 计算经纬度相对偏移 (以米为单位近似投影)
+        const dLatM = (c.ais_lat - t.sar_lat) * 111320;
+        const dLonM = (c.ais_lon - t.sar_lon) * 111320 * Math.cos(t.sar_lat * Math.PI / 180);
+
+        const x = dLonM * scale;
+        const y = -dLatM * scale; // SVG y向下为正，纬度向上为正
+
+        // 连线
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", "0"); line.setAttribute("y1", "0");
+        line.setAttribute("x2", x.toString()); line.setAttribute("y2", y.toString());
+        line.setAttribute("stroke", "#3b82f6");
+        line.setAttribute("stroke-opacity", "0.4");
+        svg.appendChild(line);
+
+        // 船舶点
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", x.toString());
+        dot.setAttribute("cy", y.toString());
+        dot.setAttribute("r", "5");
+        dot.setAttribute("fill", "#3b82f6");
+        dot.style.cursor = "pointer";
+        dot.onclick = () => selectCandidate(c.mmsi, c.vessel_name);
+        svg.appendChild(dot);
+
+        // 文本标签
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", (x + 8).toString());
+        lbl.setAttribute("y", (y + 3).toString());
+        lbl.setAttribute("fill", "#93c5fd");
+        lbl.setAttribute("font-size", "10");
+        lbl.textContent = `#${c.candidate_rank} ${c.vessel_name} (${c.distance_m}m)`;
+        svg.appendChild(lbl);
+      });
+    }
+
+    // 动作绑定
+    document.getElementById("btnConfirmMatch").onclick = () => {
+      if (!selectedMmsiChoice || selectedMmsiChoice === "NO_MATCH") {
+        const first = allTargets[currentIndex]?.candidates[0];
+        if (first) {
+          selectCandidate(first.mmsi, first.vessel_name);
+        } else {
+          alert("当前目标周围没有候选船，无法确认 MMSI，请标为暗船或存疑");
+          return;
+        }
+      }
+      submitLabel();
+    };
+
+    document.getElementById("btnMarkNoMatch").onclick = () => {
+      selectedMmsiChoice = "NO_MATCH";
+      selectedStatusChoice = "CONFIRMED";
+      document.getElementById("notesInput").value = "500米半径内无任何AIS对应报文，确认标为真实暗船/无匹配";
+      updateDecisionBox("NO_MATCH", "CONFIRMED", "确认真实暗船 / 无匹配");
+      submitLabel();
+    };
+
+    document.getElementById("btnMarkFalseAlarm").onclick = () => {
+      selectedMmsiChoice = "NO_MATCH";
+      selectedStatusChoice = "FALSE_ALARM";
+      document.getElementById("notesInput").value = "雷达强散射离岸固定设施或海杂波虚警";
+      updateDecisionBox("NO_MATCH", "FALSE_ALARM", "雷达虚警 / 离岸固定设施");
+      submitLabel();
+    };
+
+    document.getElementById("btnMarkAmbiguous").onclick = () => {
+      selectedMmsiChoice = "AMBIGUOUS";
+      selectedStatusChoice = "AMBIGUOUS";
+      document.getElementById("notesInput").value = "多船距离高度接近且时间间隔较长，当前证据不足以确信区分，标为存疑";
+      updateDecisionBox("AMBIGUOUS", "AMBIGUOUS", "存疑待定 (不强行作为正负例)");
+      submitLabel();
+    };
+
+    async function submitLabel() {
+      const t = allTargets[currentIndex];
+      const reviewer = document.getElementById("reviewerName").value || "Reviewer-1";
+      const notes = document.getElementById("notesInput").value || "";
+
+      try {
+        const res = await fetch("/sar-verification/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sar_target_id: t.sar_target_id,
+            truth_mmsi_or_no_match: selectedMmsiChoice,
+            review_status: selectedStatusChoice,
+            reviewer: reviewer,
+            notes: notes
+          })
+        });
+        if (!res.ok) throw new Error("保存失败");
+
+        // 本地更新状态
+        t.manual_truth_mmsi_or_NO_MATCH = selectedMmsiChoice;
+        t.manual_review_status = selectedStatusChoice;
+
+        // 重新计算统计
+        renderTargetList();
+        selectTarget(currentIndex);
+
+        // 自动跳转下一个
+        if (currentIndex < allTargets.length - 1) {
+          selectTarget(currentIndex + 1);
+        } else {
+          alert("🎉 当前列表全部目标已核验完毕！");
+        }
+      } catch (err) {
+        alert("保存失败: " + err.message);
+      }
+    }
+
+    document.getElementById("btnSaveSubmit").onclick = submitLabel;
+    document.getElementById("btnPrev").onclick = () => selectTarget(currentIndex - 1);
+    document.getElementById("btnNext").onclick = () => selectTarget(currentIndex + 1);
+
+    // 过滤按钮
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.filter;
+        renderTargetList();
+      };
+    });
+
+    // 快捷键支持
+    window.addEventListener("keydown", (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        selectTarget(currentIndex - 1);
+      } else if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+        selectTarget(currentIndex + 1);
+      } else if (e.key === "n" || e.key === "N") {
+        document.getElementById("btnMarkNoMatch").click();
+      } else if (e.key === "f" || e.key === "F") {
+        document.getElementById("btnMarkFalseAlarm").click();
+      } else if (e.key === "a" || e.key === "A") {
+        document.getElementById("btnMarkAmbiguous").click();
+      } else if (e.key === "Enter") {
+        document.getElementById("btnConfirmMatch").click();
+      }
+    });
+
+    // 初始化
+    loadData();
+  </script>
+</body>
+</html>

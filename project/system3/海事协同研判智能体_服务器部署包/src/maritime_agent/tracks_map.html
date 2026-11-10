@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>船舶航迹 · 海事态势</title>
+  <link rel="stylesheet" href="/assets/leaflet-1.9.4.css">
+  <link rel="stylesheet" href="/assets/tracks-map.css?v=0.7.0">
+  <style>#map{touch-action:auto}.leaflet-container{background:#dcecf0}.map-warning{margin:8px 0 0;color:#866b3a;font-size:12px}.leaflet-control-attribution{font-size:10px}</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="back">← 返回对话</a>
+    <div><strong>Houston 船舶航迹</strong><span>2024 Beryl · 小时与逐报文 AIS</span></div>
+  </header>
+  <main class="layout">
+    <section class="map-panel" aria-label="航迹坐标地图">
+      <div class="intro">
+        <h1>船舶日航迹</h1>
+        <p>选择船舶后可切换小时代表点与清洗后的逐报文 AIS 观测点；地图可缩放、拖动并点击点位查看时间。</p>
+      </div>
+      <form id="filters" class="filters">
+        <label>UTC 日期 <select id="day" required></select></label>
+        <label>船型 <select id="vessel-class"><option value="">全部船型</option></select></label>
+        <label>MMSI <input id="mmsi" inputmode="numeric" placeholder="可选，精确查找"></label>
+        <label>航迹精度 <select id="granularity"><option value="message">逐报文 AIS（默认）</option><option value="hourly">小时代表点（派生统计）</option></select></label>
+        <label>最多显示 <select id="limit"><option>50</option><option selected>100</option><option>200</option></select></label>
+        <button type="submit">查询航迹</button>
+      </form>
+      <div class="map-toolbar"><span id="status" role="status">正在读取数据…</span><button type="button" id="reset-zoom">重置缩放</button></div>
+      <div class="map-wrap">
+        <div id="map" aria-label="OpenStreetMap 底图上的船舶日航迹"></div>
+      </div>
+      <p id="basemap-status" class="map-warning" role="status" hidden></p>
+      <p class="map-note">底图是当前 OpenStreetMap 地理参照，不代表 2024 年历史岸线，也不是航海图，不可用于导航。逐报文模式对超过 15 分钟的观测空缺断线；显示抽样不改变数据库记录。</p>
+    </section>
+    <aside class="details" aria-label="航迹详情">
+      <h2>轨迹详情</h2>
+      <div id="track-detail"><p class="empty">选择地图中的一条线，查看 MMSI、时间、坐标和来源。</p></div>
+    </aside>
+  </main>
+  <script src="/assets/leaflet-1.9.4.js"></script>
+  <script src="/assets/tracks-map.js?v=0.8.0"></script>
+</body>
+</html>

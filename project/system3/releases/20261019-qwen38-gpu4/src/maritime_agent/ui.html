@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>海事态势调查智能体</title>
+  <link rel="stylesheet" href="/assets/ui.css?v=0.10.1-stream">
+</head>
+<body>
+  <div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+    <aside class="sidebar" id="sidebar" aria-label="数据集与快捷操作">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none"><path d="M4 22c4-3 8-3 12 0s8 3 12 0" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M8 28c3-2 6-2 9 0s6 2 9 0" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M18 6v12m-5-5 5-6 5 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div><strong>海事态势</strong><span>调查工作台</span></div>
+      </div>
+
+      <button class="new-chat" id="new-chat" type="button">
+        <span aria-hidden="true">＋</span> 新建对话
+      </button>
+
+      <a class="new-chat" href="/tracks-map" style="text-decoration:none;display:block;text-align:center;margin-top:8px">查看船舶航迹</a>
+      <a class="new-chat workspace-entry" href="/wind-map">
+        <span class="workspace-entry-icon" aria-hidden="true">⌖</span>
+        <span class="workspace-entry-copy"><strong>海域综合态势工作台</strong><small>AIS · 气象 · GIS · 遥感</small></span>
+        <span class="workspace-entry-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="new-chat" href="/data-intake" style="text-decoration:none;display:block;text-align:center;margin-top:8px">接入新数据</a>
+      <a class="new-chat" href="/data-management" style="text-decoration:none;display:block;text-align:center;margin-top:8px">管理已接入数据</a>
+      <button class="new-chat" id="open-critiques-btn" type="button" style="text-decoration:none;display:block;text-align:center;margin-top:8px">🧠 自进化知识库</button>
+      <a class="new-chat workspace-entry" href="/anomaly-workbench" id="anomaly-workbench-entry">
+        <span class="workspace-entry-icon" aria-hidden="true">⌖</span>
+        <span class="workspace-entry-copy"><strong>异常行为初筛与核查台</strong><small>物理流场解耦 · 候选排序 · 证据回溯</small></span>
+        <span class="workspace-entry-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <div class="sidebar-content">
+        <section class="dataset-section" aria-label="分析数据源">
+          <p class="side-heading">分析数据源</p>
+          <div class="dataset-card" id="dataset-card">
+          <div class="dataset-state"><span class="status-dot" id="status-dot"></span><span id="dataset-state">正在连接数据…</span></div>
+          <strong id="dataset-name">Houston-Beryl DS</strong>
+          <span class="dataset-id" id="dataset-id">houston-beryl-2024</span>
+          <label class="side-label dataset-selector-label" for="dataset-selector">选择研究区域数据集</label>
+          <select id="dataset-selector" class="dataset-selector"><option value="">基础数据集</option></select>
+          <a id="delete-dataset" class="delete-dataset" href="/data-management" hidden>在数据管理中查看</a>
+          <p id="dataset-action-status" class="dataset-action-status" role="status" hidden></p>
+          <div class="dataset-divider"></div>
+          <span class="side-label">UTC 数据范围</span>
+          <span class="dataset-range" id="dataset-range">正在读取…</span>
+          <div class="dataset-stats">
+            <div><strong id="stat-hours">—</strong><span id="stat-hours-label">港口小时</span></div>
+            <div><strong id="stat-zones">—</strong><span id="stat-zones-label">分区</span></div>
+            <div><strong id="stat-events">—</strong><span id="stat-events-label">确认事件</span></div>
+          </div>
+          </div>
+        </section>
+
+        <section class="history-section" aria-label="对话历史">
+          <p class="side-heading">对话历史</p>
+          <div class="history-list" id="history-list"><p class="history-empty">正在读取历史记录…</p></div>
+          <p class="history-message" id="history-message" role="status" hidden></p>
+          <button class="history-more" id="history-more" type="button" hidden>加载更多</button>
+        </section>
+
+        <p class="side-heading side-heading-later">使用说明</p>
+        <div class="side-note">
+          <span class="note-icon" aria-hidden="true">i</span>
+          <p>最近 10 轮用于追问，更早对话提供简短语境。历史会话可在上方打开；每轮数字都会重新查证。</p>
+        </div>
+      </div>
+
+      <div class="sidebar-footer"><span class="footer-dot"></span><span id="storage-footer">本地只读数据 · SQLite</span></div>
+    </aside>
+
+    <div class="main-panel">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" id="menu-toggle" type="button" aria-label="打开侧栏" aria-controls="sidebar" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <div class="topbar-title"><strong>海事态势调查智能体</strong><span class="version-badge">本地版</span></div>
+        <div class="topbar-status" id="topbar-status"><span class="status-dot"></span><span>连接中</span></div>
+      </header>
+
+      <main class="conversation" id="conversation">
+        <div class="conversation-inner">
+          <section class="welcome" id="welcome" aria-labelledby="welcome-title">
+            <div class="welcome-emblem" aria-hidden="true">
+              <svg viewBox="0 0 52 52" fill="none"><path d="M8 33c6-5 12-5 18 0s12 5 18 0M13 40c4-3 8-3 12 0s8 3 12 0" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M26 9v17m-7-9 7-8 7 8" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p class="eyebrow">HOUSTON · BERYL</p>
+            <h1 id="welcome-title">想了解什么海事变化？</h1>
+            <p class="welcome-copy">用自然语言提问，我会从本地数据中查找指标和事件证据，再给你一个可核查的回答。</p>
+            <div class="suggestions" aria-label="示例问题">
+              <button class="suggestion" type="button" data-question="2024 年 7 月 8 日 UTC，Houston 港口 AIS 数据相较前一天有什么变化？"><span class="suggestion-icon" aria-hidden="true">↗</span><span>7 月 8 日的 AIS 数据有什么变化？</span></button>
+              <button class="suggestion" type="button" data-question="2024 年 7 月 8 日 UTC，Houston 港口每小时平均移动船舶数与 7 月 6 日相比如何？"><span class="suggestion-icon" aria-hidden="true">≈</span><span>移动船舶数与 7 月 6 日相比如何？</span></button>
+              <button class="suggestion" type="button" data-question="本地数据中有哪些已确认的港口或航道运营事件？请给出证据。"><span class="suggestion-icon" aria-hidden="true">▤</span><span>有哪些已确认的港口运营事件？</span></button>
+              <button class="suggestion" type="button" data-question="这个数据集覆盖哪些时间、分区和船舶类型？"><span class="suggestion-icon" aria-hidden="true">◫</span><span>数据集覆盖哪些范围和指标？</span></button>
+            </div>
+          </section>
+          <div class="messages" id="messages" aria-live="polite" aria-relevant="additions text"></div>
+        </div>
+      </main>
+
+      <div class="composer-shell">
+        <form class="composer" id="form">
+          <label class="sr-only" for="question">输入海事问题</label>
+          <textarea id="question" rows="1" maxlength="4000" placeholder="向海事态势智能体提问…" required></textarea>
+          <div class="composer-bottom">
+            <span>Enter 发送 · Shift + Enter 换行</span>
+            <button class="send-button" id="submit" type="submit" aria-label="发送问题" disabled>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </form>
+        <p class="composer-note">回答仅基于当前本地数据集，重要结论请核对证据。</p>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="critiques-modal" id="critiques-modal" aria-labelledby="critiques-modal-title">
+    <div class="critiques-modal-header">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px" aria-hidden="true">🧠</span>
+        <h2 id="critiques-modal-title" style="margin:0;font-size:16px;font-weight:600">自进化反思知识库 (Evolved Rules)</h2>
+      </div>
+      <button type="button" class="critiques-modal-close" id="close-critiques-btn" aria-label="关闭">✕</button>
+    </div>
+    <p style="margin:8px 0 16px;font-size:13px;color:var(--muted)">
+      智能体在研判中自动从用户纠偏与工具执行中提炼的避坑规约。系统在后续多轮推理中会自动激活相关规则，越用越聪明。
+    </p>
+    <div class="critiques-list" id="critiques-list">
+      <p style="text-align:center;color:#94a3b8;font-size:13px">正在加载自进化规则…</p>
+    </div>
+  </dialog>
+
+  <script src="/assets/answer-renderer.js?v=0.6.0"></script>
+  <script src="/assets/wind-particles.js?v=1.0.0"></script>
+  <script src="/assets/inline-visualizations.js?v=1.0.0"></script>
+  <script src="/assets/ui.js?v=0.12.0-dossier-stream"></script>
+</body>
+</html>

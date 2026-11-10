@@ -1,0 +1,53 @@
+# Phase 1 — Houston/Galveston 数据契约与物理边界基准
+# 所有数值均为 2026-10-19 在 6000D 实测后锁定，改动需在变更记录里注明原因
+
+project:
+  name: ais_phase1_houston
+  timezone: UTC
+  seed: 20261019
+
+data:
+  raw_dir: /mnt/sda/WangZijia/houston_galveston_2024_07/data/raw/noaa_ais
+  parsed_parquet: /mnt/sda/WangZijia/AIS/data/interim/ais_houston_202407_enriched.parquet
+  env_parquet: /mnt/sda/WangZijia/houston_galveston_2024_07/data/interim/environment_observations.parquet
+  legacy_parquet: /mnt/sda/WangZijia/houston_galveston_2024_07/data/interim/ais_motion.parquet  # 缺 COG/heading，仅作对照
+
+roi:
+  core_lat: [29.20, 29.80]
+  core_lon: [-95.10, -94.60]
+  inner_lat: [29.21, 29.79]
+  inner_lon: [-95.09, -94.61]
+  outer_lat: [29.19, 29.81]
+  outer_lon: [-95.11, -94.59]
+  projection_center: [29.50, -94.85]
+
+kinematics:
+  min_dt_s: 5            # 小于此值视为重复报文
+  max_dt_s: 600          # 大于此值视为断点，不计算残差
+  tau_kin: 2.5           # m/s，W_heur 的软阈值起点（待 §6 标定）
+  sigma_kin: 2.0
+  min_sog_kn: 2.0        # 低于此值 COG 随机，不参与场与统计
+
+field:
+  radius_nm: 8.0         # 实测：5nm 中位数 3，8nm 中位数 5（D0 诊断）
+  sigma_nm: 4.0
+  max_dcog_deg: 45.0
+  min_neighbors: 4
+  spread_min: 0.15
+  cond_max: 1000
+  fallback: weighted_mean   # 邻船不足时回退，保持四维向量维度
+
+scan:
+  bin_seconds: 600       # dt 中位数 70s → 10 min 窗口至少 ~8 个点
+  persistent_bins: 3     # 连续可见 >= 3 bins 才计入宏观统计
+  throughput_half_life: null
+
+thresholds:
+  # 尚未标定：先出无阈值序列，人工核验 3 天后写入
+  tau_div_1_s: null
+  tau_sog_kn: null
+
+gates:
+  gate1:
+    valid_field_ratio_min: 0.60
+    neighbor_median_min: 4

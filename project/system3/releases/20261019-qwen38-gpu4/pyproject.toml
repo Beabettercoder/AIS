@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maritime-situation-agent"
+version = "0.16.0"
+description = "Evidence-grounded maritime situation investigation agent"
+requires-python = ">=3.11"
+dependencies = [
+  "langgraph>=1.0,<2",
+  "langchain-openai>=1.0,<2",
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.30,<1",
+  "openpyxl>=3.1,<4",
+  "xlrd>=2,<3",
+  "dateparser>=1.2,<2",
+  "pypdf>=5,<7",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+remote-sensing = ["numpy>=2,<3", "rasterio>=1.4,<2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+maritime_agent = ["ui.html", "ui.css", "ui.js", "answer_renderer.js", "inline_visualizations.js", "tracks_map.html", "tracks_map.css", "tracks_map.js", "data_intake.html", "data_intake.js", "data_management.html", "data_management.js", "situation_cube.html", "situation_cube.js", "leaflet-1.9.4.js", "leaflet-1.9.4.css", "migrations/*.sql", "alignment_rules/*.json"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

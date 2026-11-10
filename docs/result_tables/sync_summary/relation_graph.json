@@ -1,0 +1,9 @@
+{
+  "status": "complete",
+  "task": "relation",
+  "model": "graph",
+  "rows": 798,
+  "pairs": 190,
+  "bootstrap": 2000,
+  "note": "target MMSI clustered conditional on the three trained seeds; heldout test previously used; comparisons not multiplicity adjusted"
+}

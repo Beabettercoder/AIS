@@ -1,0 +1,11 @@
+import sys,importlib.util,json
+from pathlib import Path
+import numpy as np,torch
+from torch.nn import functional as F
+from sklearn.metrics import average_precision_score
+root=Path('/mnt/sda/WangZijia/AIS/outputs');sp=importlib.util.spec_from_file_location('heading',root/'heading_alignment_20261030/train_heading.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);m.VARIANT='aligned_embed';torch.set_num_threads(2);dev=torch.device('cuda:0');d=m.read('train');mu,sd=m.fit(d);x,mask,t=m.prep(d,'base','F1',mu,sd,dev); y=torch.tensor(d['y'],dtype=torch.float32,device=dev);ix=np.random.default_rng(887).choice(len(y),1024,replace=False);idx=torch.tensor(ix,device=dev);x=x[idx];mask=mask[idx];t=t[idx];y=y[idx];orig,_=m.features(d,'base','F1');L=d['length'];last=orig[np.arange(len(L)),L-1]; scal=np.abs(last[:,32]); valid=orig[np.arange(len(L)),L-1,22]>0
+m.seed();init=m.get_model('itransformer',m.NF,True).to(dev);p=root/'heading_alignment_20261030/runs/aligned_embed/itransformer/F1';final=m.get_model('itransformer',m.NF,True).to(dev);final.load_state_dict(torch.load(p/'final.pt',map_location=dev,weights_only=True));out={}
+for name,model in [('initial',init),('final',final)]:
+ model.eval();model.zero_grad(set_to_none=True);xx=x.detach().clone().requires_grad_();log=model(xx,mask,t)['logits'];loss=F.binary_cross_entropy_with_logits(log,y);loss.backward(); g=xx.grad; grp={'target':(0,8),'old_context':(8,24),'heading_derived':(24,35)};gn={k:float(g[:,:,a:b].abs().mean().cpu()) for k,(a,b) in grp.items()};pn={k:float(p.grad.norm().cpu()) if p.grad is not None else None for k,p in model.named_parameters() if k in ('temporal_projection.weight','var_embed','readout.weight','head.weight')};out[name]={'bce':float(loss.detach().cpu()),'logit_std':float(log.detach().std().cpu()),'abs_input_gradient_mean':gn,'parameter_gradient_norm':pn}
+out['difference_scalar']={'train_ap_abs_delta':float(average_precision_score(d['y'][valid],scal[valid])),'n_cases':len(d['y']),'n_supported':int(valid.sum())};out['normalizer_sd_derived']=sd[24:].tolist();out['note']='Exploratory 1024 sampled train examples with eval-mode dropout; nonzero gradient is not evidence of healthy optimization across all epochs.'
+p=(root/'framework_repair_diagnostics_20261030/heading_itransformer_gradient_audit.json');p.write_text(json.dumps(out,indent=2));print(p.read_text())

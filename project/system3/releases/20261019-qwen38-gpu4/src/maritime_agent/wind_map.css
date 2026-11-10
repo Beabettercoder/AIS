@@ -1,0 +1,3039 @@
+/* Professional Maritime Domain Awareness Center Styles */
+:root {
+  --bg-dark: #060b13;
+  --bg-panel: rgba(11, 20, 34, 0.94);
+  --bg-card: rgba(15, 27, 45, 0.92);
+  --border-subtle: rgba(56, 189, 248, 0.2);
+  --border-highlight: rgba(56, 189, 248, 0.45);
+  --text-main: #f8fafc;
+  --text-dim: #94a3b8;
+  --text-muted: #64748b;
+  --accent-cyan: #38bdf8;
+  --accent-green: #4ade80;
+  --accent-yellow: #facc15;
+  --accent-orange: #fb923c;
+  --accent-red: #ef4444;
+  --accent-purple: #c084fc;
+}
+
+/* v3 workspace refresh: task-first maritime intelligence layout */
+:root {
+  --workspace-teal: #0c7c82;
+  --workspace-teal-bright: #20b8b2;
+  --workspace-ink: #102a2f;
+  --workspace-panel: rgba(9, 28, 34, 0.94);
+  --workspace-panel-soft: rgba(15, 39, 45, 0.91);
+  --workspace-line: rgba(160, 218, 215, 0.18);
+  --workspace-shadow: 0 18px 50px rgba(1, 12, 16, 0.34);
+}
+
+.topbar {
+  height: 68px;
+  padding: 0 18px;
+  background: rgba(248, 252, 251, 0.97);
+  border-bottom: 1px solid rgba(16, 42, 47, 0.12);
+  box-shadow: 0 5px 18px rgba(7, 31, 36, 0.12);
+  color: var(--workspace-ink);
+}
+.brand strong { color: var(--workspace-ink); font-size: 15px; letter-spacing: 0; }
+.brand .subtitle { color: #60767a; font-size: 10px; }
+.back-link {
+  color: var(--workspace-teal);
+  background: #e8f5f3;
+  border-color: #c3e4e0;
+}
+.back-link:hover { color: #075c62; background: #d7efec; }
+.live-pulse { background: var(--workspace-teal-bright); box-shadow: 0 0 0 4px rgba(32,184,178,.13); animation: none; }
+.topbar-advisory {
+  max-width: 350px;
+  background: #f3f7f6;
+  border-color: #dce8e6;
+}
+.advisory-tag { color: #8a5a13; background: #fff1cc; }
+.advisory-text { color: #52686c; }
+
+/* 顶部海区自适应切换选择器 */
+.workspace-region-selector-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 14px;
+  padding: 4px 10px;
+  background: #f0f7f6;
+  border: 1px solid #cce3e0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+.workspace-region-selector-wrapper:hover {
+  border-color: var(--workspace-teal);
+  background: #e6f3f1;
+}
+.region-select-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+.workspace-region-select {
+  border: none;
+  background: transparent;
+  color: var(--workspace-ink);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  padding: 2px 4px;
+}
+.workspace-region-select option {
+  background: #ffffff;
+  color: #102a2f;
+  font-weight: 600;
+}
+
+/* 遥感雷达 CFAR 目标与切片外廓样式 */
+.sar-scene-polygon {
+  stroke: #38bdf8;
+  stroke-width: 2px;
+  stroke-dasharray: 6 4;
+  fill: #0284c7;
+  fill-opacity: 0.08;
+}
+.sar-cfar-reticle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.sar-cfar-reticle-box {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
+  background: rgba(239, 68, 68, 0.15);
+  transition: all 0.2s ease;
+}
+.sar-cfar-reticle:hover .sar-cfar-reticle-box {
+  transform: scale(1.3);
+  border-color: #facc15;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.9);
+}
+
+.kpi-card {
+  min-width: 92px;
+  background: #f5f9f8;
+  border-color: #dce8e6;
+  border-radius: 9px;
+  text-align: left;
+}
+.kpi-label { color: #718489; }
+.highlight-cyan strong,.highlight-green strong,.highlight-red strong,.highlight-purple strong { color: var(--workspace-ink); }
+.ai-entry-button {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--workspace-teal);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(12,124,130,.23);
+}
+.ai-entry-button:hover { background: #096a70; }
+.ai-entry-dot { width: 7px; height: 7px; border-radius: 50%; background: #86f0d1; box-shadow: 0 0 0 4px rgba(134,240,209,.16); }
+.main-viewport { height: calc(100vh - 68px); }
+
+.map-action-rail {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  z-index: 710;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  border: 1px solid var(--workspace-line);
+  border-radius: 13px;
+  background: rgba(8, 28, 34, 0.9);
+  box-shadow: var(--workspace-shadow);
+  backdrop-filter: blur(14px);
+}
+.rail-button {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 0;
+  border-radius: 9px;
+  color: #a9bec1;
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+.rail-button span { font-size: 17px; }
+.rail-button small { font-size: 9px; }
+.rail-button:hover,.rail-button.is-active { color: #fff; background: rgba(32,184,178,.19); }
+
+.sidebar-vessels {
+  top: 16px;
+  left: 78px;
+  bottom: 100px;
+  width: 294px;
+  border-radius: 13px;
+  background: var(--workspace-panel);
+  border-color: var(--workspace-line);
+  box-shadow: var(--workspace-shadow);
+}
+.sidebar-vessels.collapsed { transform: translateX(-390px); }
+.sidebar-toggle-btn { display: none; }
+.sidebar-header h3 { font-size: 14px; }
+.v-filter-btn { border-radius: 999px; padding: 5px 9px; }
+.v-filter-btn.active { background: rgba(32,184,178,.18); border-color: var(--workspace-teal-bright); color: #8be2dc; }
+
+.layer-dock {
+  top: 16px;
+  left: 78px;
+  right: auto;
+  bottom: 100px;
+  width: 300px;
+  border-radius: 13px;
+  background: var(--workspace-panel);
+  border-color: var(--workspace-line);
+  box-shadow: var(--workspace-shadow);
+  opacity: 0;
+  transform: translateX(-24px);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.layer-dock.workspace-open { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.dock-header { min-height: 48px; padding: 0 14px; }
+.dock-title { font-size: 14px; }
+.dock-body { max-height: calc(100vh - 245px); overflow-y: auto; }
+
+.ai-copilot-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  bottom: 100px;
+  z-index: 720;
+  width: min(410px, calc(100vw - 110px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #eaf5f4;
+  border: 1px solid var(--workspace-line);
+  border-radius: 16px;
+  background: var(--workspace-panel);
+  box-shadow: var(--workspace-shadow);
+  backdrop-filter: blur(18px);
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.ai-copilot-panel.is-open { opacity: 1; transform: translateX(0); }
+.copilot-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 12px; border-bottom: 1px solid var(--workspace-line); }
+.copilot-eyebrow { display: block; margin-bottom: 3px; color: #7edbd5; font-size: 9px; font-weight: 800; letter-spacing: .14em; }
+.copilot-header h2 { font-size: 20px; font-weight: 650; }
+.copilot-close { width: 30px; height: 30px; border: 0; border-radius: 8px; background: rgba(255,255,255,.07); color: #d8e8e7; font-size: 20px; cursor: pointer; }
+.copilot-context { display: flex; align-items: center; gap: 10px; margin: 12px 16px 6px; padding: 10px 12px; border-radius: 10px; background: rgba(32,184,178,.09); border: 1px solid rgba(32,184,178,.18); }
+.context-live { width: 8px; height: 8px; border-radius: 50%; background: #4adeb9; box-shadow: 0 0 0 4px rgba(74,222,185,.12); }
+.copilot-context strong,.copilot-context small { display: block; }
+.copilot-context strong { font-size: 11px; }
+.copilot-context small { margin-top: 2px; color: #91a9ac; font-size: 10px; }
+.copilot-starters { display: flex; gap: 6px; padding: 8px 16px; overflow-x: auto; }
+.copilot-starters button { flex: 0 0 auto; padding: 7px 10px; border: 1px solid rgba(160,218,215,.16); border-radius: 999px; background: rgba(255,255,255,.04); color: #bcd0d2; font-size: 10px; cursor: pointer; }
+.copilot-starters button:hover { color: #fff; border-color: rgba(32,184,178,.5); }
+.copilot-thread { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 16px; }
+.copilot-welcome { margin: 18px 4px; padding: 18px; border-radius: 12px; background: linear-gradient(145deg, rgba(32,184,178,.12), rgba(255,255,255,.035)); }
+.copilot-welcome strong { font-size: 14px; }
+.copilot-welcome p { margin-top: 8px; color: #a8bdc0; font-size: 12px; line-height: 1.65; }
+.copilot-message { margin-bottom: 12px; padding: 12px 13px; border-radius: 12px; background: rgba(255,255,255,.055); }
+.copilot-message.user { margin-left: 42px; background: rgba(32,184,178,.15); }
+.copilot-message-label { display: block; margin-bottom: 6px; color: #80d8d3; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
+.copilot-message-body { white-space: pre-wrap; color: #e8f1f1; font-size: 12px; line-height: 1.65; }
+.copilot-message small { display: block; margin-top: 8px; color: #7fb5b3; }
+.copilot-message.is-error { border: 1px solid rgba(248,113,113,.4); }
+.copilot-composer { margin: 0 14px 14px; padding: 10px; border: 1px solid rgba(160,218,215,.2); border-radius: 12px; background: rgba(2,13,17,.48); }
+.copilot-composer textarea { width: 100%; resize: none; border: 0; outline: 0; background: transparent; color: #fff; font: inherit; font-size: 12px; line-height: 1.55; }
+.copilot-composer textarea::placeholder { color: #708a8e; }
+.copilot-composer-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.copilot-composer-foot span { color: #71898c; font-size: 9px; }
+.copilot-composer-foot button { padding: 7px 14px; border: 0; border-radius: 8px; background: var(--workspace-teal); color: #fff; font-weight: 700; cursor: pointer; }
+.copilot-composer-foot button:disabled { opacity: .55; cursor: wait; }
+
+.gis-drawer-card,.vessel-card,.weather-picker-card {
+  right: 16px;
+  left: auto;
+  border-radius: 14px;
+  background: var(--workspace-panel);
+  border-color: var(--workspace-line);
+  box-shadow: var(--workspace-shadow);
+}
+.maritime-legend-card { right: 16px; bottom: 100px; border-radius: 11px; background: rgba(9,28,34,.9); border-color: var(--workspace-line); }
+.gfw-timeline-panel {
+  left: 78px;
+  right: 16px;
+  bottom: 14px;
+  border-radius: 13px;
+  background: rgba(9,28,34,.94);
+  border-color: var(--workspace-line);
+  box-shadow: var(--workspace-shadow);
+}
+
+@media (max-width: 1180px) {
+  .topbar-advisory,.topbar-kpis .kpi-card:nth-child(n+3) { display: none; }
+  .ai-copilot-panel { width: 380px; }
+}
+@media (max-width: 820px) {
+  .topbar-advisory,.ai-entry-button { display: none; }
+  .topbar-kpis .kpi-card { display: none; }
+  .brand .subtitle { display: none; }
+  .sidebar-vessels { right: 12px; left: 72px; width: auto; }
+  .ai-copilot-panel { left: 72px; right: 12px; width: auto; }
+  .gfw-timeline-panel { left: 72px; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar Header */
+.topbar {
+  height: 60px;
+  background: rgba(8, 15, 26, 0.96);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+  gap: 12px;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.back-link {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  transition: all 0.2s;
+}
+.back-link:hover { background: rgba(56, 189, 248, 0.22); color: #fff; }
+
+.brand { display: flex; flex-direction: column; }
+.brand-title { display: flex; align-items: center; gap: 8px; }
+.live-pulse {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulse-glow 2s infinite;
+}
+@keyframes pulse-glow {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+.brand strong { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: 0.4px; }
+.subtitle { font-size: 10px; color: var(--text-dim); }
+
+/* USCG Advisory Bar in Header */
+.topbar-advisory {
+  flex: 1;
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 4px 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.advisory-tag {
+  font-size: 10px; font-weight: 700; color: #f87171; text-transform: uppercase;
+  background: rgba(239, 68, 68, 0.2); padding: 2px 6px; border-radius: 4px;
+}
+.advisory-text { font-size: 11px; color: #fca5a5; overflow: hidden; text-overflow: ellipsis; }
+
+/* Global KPIs in Topbar */
+.topbar-kpis { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.kpi-card {
+  display: flex; flex-direction: column;
+  padding: 4px 10px;
+  background: rgba(14, 25, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  min-width: 105px;
+  text-align: right;
+}
+.kpi-label { font-size: 9px; color: var(--text-dim); }
+.kpi-card strong { font-size: 13px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.kpi-card small { font-size: 10px; font-weight: normal; opacity: 0.85; margin-left: 2px; }
+.highlight-cyan strong { color: var(--accent-cyan); }
+.highlight-green strong { color: var(--accent-green); }
+.highlight-red strong { color: #f87171; }
+.highlight-purple strong { color: var(--accent-purple); }
+
+/* Main Map Viewport */
+.main-viewport {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: calc(100vh - 60px);
+  background: var(--bg-dark);
+}
+#map {
+  width: 100%; height: 100%;
+  background: #040810 !important;
+}
+.leaflet-container { background: #040810 !important; }
+
+/* Canvas Overlay */
+#wind-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 400;
+}
+
+/* Left Collapsible Vessels Sidebar */
+.sidebar-vessels {
+  position: absolute;
+  top: 14px; left: 14px;
+  bottom: 120px;
+  width: 320px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  backdrop-filter: blur(14px);
+  z-index: 500;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  display: flex;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sidebar-vessels.collapsed {
+  transform: translateX(-340px);
+}
+.sidebar-toggle-btn {
+  position: absolute;
+  right: -32px; top: 18px;
+  width: 32px; height: 38px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  color: var(--accent-cyan);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+.sidebar-toggle-btn:hover { background: rgba(18, 35, 60, 0.95); }
+.sidebar-vessels.collapsed .toggle-icon { transform: rotate(180deg); }
+
+.sidebar-inner {
+  display: flex; flex-direction: column;
+  width: 100%; height: 100%;
+  padding: 14px;
+  overflow: hidden;
+}
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.sidebar-header h3 { font-size: 13px; color: #fff; font-weight: 600; }
+.vessel-total-tag {
+  font-size: 11px;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-cyan);
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.search-box {
+  position: relative;
+  margin-bottom: 8px;
+}
+.search-box input {
+  width: 100%;
+  padding: 7px 28px 7px 10px;
+  background: rgba(6, 12, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-box input:focus { border-color: var(--accent-cyan); }
+.search-clear-btn {
+  position: absolute; right: 8px; top: 6px;
+  background: transparent; border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 14px;
+}
+
+.underway-filter-row {
+  margin-bottom: 8px;
+}
+.underway-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--accent-green); cursor: pointer; user-select: none;
+}
+.underway-label input { cursor: pointer; accent-color: var(--accent-green); }
+
+.vessel-filters {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.v-filter-btn {
+  background: rgba(15, 28, 48, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--text-dim);
+  font-size: 11px;
+  padding: 4px 7px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.v-filter-btn:hover { color: #fff; border-color: rgba(56, 189, 248, 0.4); }
+.v-filter-btn.active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.vessel-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 6px;
+  padding-right: 4px;
+}
+.vessel-list::-webkit-scrollbar { width: 4px; }
+.vessel-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+
+.vessel-item {
+  background: rgba(14, 25, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.vessel-item:hover {
+  background: rgba(20, 38, 64, 0.85);
+  border-color: var(--border-highlight);
+  transform: translateY(-1px);
+}
+.vessel-item.active-selected {
+  background: rgba(14, 165, 233, 0.28) !important;
+  border: 1px solid var(--accent-cyan) !important;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.45), inset 0 0 12px rgba(56, 189, 248, 0.25);
+  transform: translateY(-1px);
+}
+.vessel-item.active-selected .vessel-item-name {
+  color: var(--accent-cyan) !important;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+}
+.vessel-item-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 3px;
+}
+.vessel-item-name { font-size: 12px; font-weight: 600; color: #fff; }
+.vessel-badge {
+  font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 600; text-transform: uppercase;
+}
+.badge-tanker { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+.badge-cargo { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+.badge-tug { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+.badge-other { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+
+.vessel-item-sub {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; color: var(--text-dim);
+}
+
+/* Right Floating Layer Dock */
+.layer-dock {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 250px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  backdrop-filter: blur(14px);
+  padding: 12px 14px;
+  z-index: 500;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  display: flex; flex-direction: column; gap: 10px;
+  transition: all 0.3s;
+}
+.dock-header { display: flex; align-items: center; justify-content: space-between; }
+.dock-title { font-size: 12px; font-weight: 600; color: #fff; }
+.dock-collapse-btn {
+  background: transparent; border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 16px; font-weight: bold;
+}
+.dock-collapse-btn:hover { color: #fff; }
+
+.dock-body { display: flex; flex-direction: column; gap: 10px; }
+.dock-group { display: flex; flex-direction: column; gap: 5px; }
+.dock-group-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+.basemap-selector { display: flex; gap: 4px; }
+.bmap-btn {
+  flex: 1;
+  background: rgba(14, 25, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  color: var(--text-dim);
+  font-size: 10px;
+  padding: 5px 2px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.bmap-btn:hover { color: #fff; border-color: rgba(56, 189, 248, 0.4); }
+.bmap-btn.active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.layer-toggle-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: var(--text-main);
+  cursor: pointer;
+  padding: 2px 0;
+  user-select: none;
+}
+.layer-toggle-row input { cursor: pointer; accent-color: var(--accent-cyan); }
+.layer-icon { font-size: 12px; }
+.layer-name { flex: 1; }
+
+.slider-subrow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-left: 24px; font-size: 10px; color: var(--text-dim);
+}
+.slider-subrow input[type="range"] {
+  width: 105px; cursor: pointer; accent-color: var(--accent-cyan);
+}
+
+.dock-legend {
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.legend-title { font-size: 9px; color: var(--text-dim); margin-bottom: 3px; }
+.legend-wind-bar {
+  display: flex; height: 5px; border-radius: 3px; overflow: hidden;
+}
+.legend-wind-bar span { flex: 1; }
+.legend-labels {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: var(--text-muted); margin-top: 2px;
+  font-family: monospace;
+}
+
+/* Glass Floating Cards (Weather Picker & Vessel Inspector) */
+.glass-card {
+  position: absolute;
+  background: var(--bg-card);
+  border: 1px solid var(--border-highlight);
+  border-radius: 10px;
+  backdrop-filter: blur(14px);
+  padding: 12px 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  z-index: 600;
+  min-width: 270px;
+  animation: card-appear 0.2s ease-out;
+}
+@keyframes card-appear {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.weather-picker-card { top: 14px; left: 350px; }
+.vessel-card { bottom: 120px; left: 350px; }
+
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.card-title { font-size: 12px; font-weight: 600; color: var(--accent-cyan); }
+.card-close {
+  background: transparent; border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 16px; line-height: 1;
+}
+.card-close:hover { color: #fff; }
+.card-coords { font-size: 10px; color: var(--text-muted); font-family: monospace; margin-bottom: 8px; }
+
+.vessel-type-badge {
+  font-size: 9px; padding: 2px 6px; border-radius: 3px; font-weight: 700;
+  background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);
+}
+.vessel-name-title { font-size: 13px; font-weight: 600; color: #fff; }
+.vessel-meta { font-size: 10px; color: var(--text-dim); margin-bottom: 8px; }
+
+.card-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  background: rgba(6, 12, 22, 0.4);
+  padding: 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.card-cell { display: flex; flex-direction: column; }
+.cell-label { font-size: 9px; color: var(--text-muted); }
+.cell-val { font-size: 12px; font-weight: 600; color: #fff; font-family: monospace; }
+.cell-sub { font-size: 9px; color: var(--text-dim); }
+.text-cyan { color: var(--accent-cyan) !important; }
+.text-green { color: var(--accent-green) !important; }
+.text-purple { color: var(--accent-purple) !important; }
+
+.card-foot, .card-storm-info {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; color: var(--text-dim); margin-top: 8px;
+  padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.card-storm-info strong { color: var(--accent-orange); }
+
+.card-actions { margin-top: 8px; }
+.btn-track-replay {
+  width: 100%;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: var(--accent-cyan);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-track-replay:hover { background: rgba(56, 189, 248, 0.3); color: #fff; }
+
+/* ============================================================
+   Global Fishing Watch (GFW) Style Continuous Interactive Timeline
+   ============================================================ */
+.gfw-timeline-panel {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  right: 14px;
+  background: rgba(8, 16, 28, 0.92);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 12px;
+  backdrop-filter: blur(20px) saturate(180%);
+  padding: 10px 16px 8px 16px;
+  z-index: 500;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.7), 0 0 24px rgba(56, 189, 248, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  user-select: none;
+}
+
+/* 顶部控制行 */
+.gfw-timeline-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.gfw-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gfw-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 控制按钮通用 */
+.gfw-btn {
+  background: rgba(14, 25, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.gfw-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--accent-cyan);
+  color: #fff;
+}
+
+/* 播放主按钮 */
+.gfw-btn-play {
+  width: auto;
+  padding: 0 14px;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: var(--accent-cyan);
+}
+.gfw-btn-play:hover {
+  background: rgba(56, 189, 248, 0.35);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+.gfw-btn-play.active {
+  background: var(--accent-cyan);
+  color: #040810;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+  border-color: #fff;
+}
+
+/* 倍速切换组 */
+.gfw-speed-group {
+  display: flex;
+  gap: 2px;
+  background: rgba(14, 25, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 2px;
+}
+.gfw-speed-btn {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.gfw-speed-btn:hover {
+  color: #fff;
+}
+.gfw-speed-btn.active {
+  background: rgba(56, 189, 248, 0.25);
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+/* 全域连续时空流专属标识 */
+.gfw-continuous-stream-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
+}
+
+/* 当前时刻大屏显示 */
+.gfw-current-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(14, 25, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+.gfw-clock-icon {
+  font-size: 14px;
+}
+#gfw-current-time-text {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--accent-cyan);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.gfw-stage-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(251, 146, 60, 0.18);
+  border: 1px solid rgba(251, 146, 60, 0.4);
+  color: var(--accent-orange);
+  white-space: nowrap;
+}
+
+/* 自定义时间挑选器 */
+.gfw-custom-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(14, 25, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.picker-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+#gfw-datetime-picker {
+  background: rgba(6, 12, 22, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #fff;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 3px 6px;
+  color-scheme: dark;
+}
+#gfw-datetime-picker:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.35);
+}
+.gfw-btn-apply {
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: var(--accent-cyan);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.gfw-btn-apply:hover {
+  background: var(--accent-cyan);
+  color: #040810;
+}
+
+/* 预设切换胶囊 */
+.gfw-presets {
+  display: flex;
+  gap: 4px;
+}
+.gfw-preset-btn {
+  background: rgba(14, 25, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.gfw-preset-btn:hover {
+  color: #fff;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+.gfw-preset-btn.active {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+}
+
+/* ============================================================
+   GFW 直方图轨道与自由拖拽游标 (Scrubber Track)
+   ============================================================ */
+.gfw-track-container {
+  position: relative;
+  height: 52px;
+  background: rgba(5, 11, 20, 0.85);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: visible; /* 允许 handle 稍微超出 */
+  cursor: pointer;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+  touch-action: none; /* 保证触控/拖拽流畅 */
+}
+
+/* 直方图柱子容器 */
+.gfw-histogram-track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 4px 6px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* 单根直方图细柱 */
+.gfw-hist-bar {
+  flex: 1;
+  min-width: 2px;
+  border-radius: 2px 2px 0 0;
+  transition: height 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s;
+  cursor: pointer;
+  opacity: 0.82;
+}
+.gfw-hist-bar:hover {
+  opacity: 1;
+  filter: brightness(1.4);
+  transform: scaleY(1.05);
+}
+.gfw-hist-bar.active {
+  opacity: 1;
+  filter: brightness(1.6) drop-shadow(0 0 6px #38bdf8);
+}
+
+/* 进度填充覆盖层 */
+.gfw-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.04), rgba(56, 189, 248, 0.22));
+  border-right: 1px solid rgba(56, 189, 248, 0.5);
+  pointer-events: none;
+  border-radius: 8px 0 0 8px;
+  transition: width 0.08s ease-out;
+}
+
+/* GFW 拖拽游标针 (Scrubber Needle) */
+.gfw-scrubber-needle {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 50%;
+  width: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 10px #38bdf8, 0 0 20px #38bdf8;
+  z-index: 20;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: left 0.08s ease-out;
+}
+.gfw-scrubber-needle.dragging {
+  transition: none; /* 拖拽时消除延迟，60fps 即时跟随 */
+}
+
+/* 游标拖拽手柄 (Needle Handle) */
+.gfw-needle-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 38px;
+  background: rgba(14, 25, 42, 0.95);
+  border: 1.5px solid var(--accent-cyan);
+  border-radius: 6px;
+  cursor: ew-resize;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  transition: transform 0.15s, background-color 0.15s;
+}
+.gfw-needle-handle:hover,
+.gfw-scrubber-needle.dragging .gfw-needle-handle {
+  transform: translate(-50%, -50%) scale(1.15);
+  background: var(--accent-cyan);
+  box-shadow: 0 0 18px var(--accent-cyan);
+}
+.gfw-needle-handle .handle-line {
+  width: 2px;
+  height: 16px;
+  background: #fff;
+  border-radius: 1px;
+}
+.gfw-scrubber-needle.dragging .gfw-needle-handle .handle-line {
+  background: #040810;
+}
+
+/* 悬停时间卡片 Tooltip */
+.gfw-hover-tooltip {
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(8, 16, 28, 0.96);
+  border: 1px solid var(--accent-cyan);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.35);
+  padding: 6px 12px;
+  border-radius: 6px;
+  pointer-events: none;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  backdrop-filter: blur(12px);
+}
+.gfw-hover-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--accent-cyan) transparent transparent transparent;
+}
+#tooltip-time {
+  color: #fff;
+  font-weight: 700;
+  font-family: monospace;
+}
+#tooltip-wind {
+  color: var(--accent-cyan);
+  font-size: 10px;
+}
+
+/* 底部刻度尺 */
+.gfw-scale-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: monospace;
+  padding: 0 4px;
+}
+.scale-tick {
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.scale-tick:hover {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+.scale-tick.highlight {
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+/* Vessel Marker Vector Icons on Leaflet */
+.leaflet-vessel-icon {
+  pointer-events: auto;
+}
+.leaflet-vessel-icon:hover svg {
+  filter: drop-shadow(0 0 6px #fff);
+}
+
+/* 选中的地图船模 Marker 专属发光高亮与常驻船名小标贴（绝不覆写 Leaflet 外层 translate 坐标） */
+.leaflet-vessel-icon.is-selected {
+  z-index: 10000 !important;
+}
+.leaflet-vessel-icon.is-selected svg {
+  filter: drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 14px #38bdf8) !important;
+  transform: scale(1.65) !important;
+  transform-origin: 50% 50%;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+}
+.leaflet-vessel-icon.is-selected polygon {
+  stroke: #ffffff !important;
+  stroke-width: 2.2px !important;
+  opacity: 1 !important;
+}
+
+/* 选中船舶正上方浮动常驻船名标贴（无遮挡、极简专业 GIS 风格） */
+.leaflet-vessel-icon.is-selected::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.94);
+  color: #38bdf8;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(56, 189, 248, 0.85);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 8px rgba(56, 189, 248, 0.4);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10001;
+  letter-spacing: 0.3px;
+}
+
+/* 目标锁定状态条 (Target Lock Bar in Topbar) */
+.target-lock-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(14, 165, 233, 0.22);
+  border: 1px solid var(--accent-cyan);
+  padding: 4px 12px;
+  border-radius: 6px;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+  animation: lock-glow 2s infinite alternate;
+}
+@keyframes lock-glow {
+  0% { border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 8px rgba(56, 189, 248, 0.2); }
+  100% { border-color: rgba(56, 189, 248, 0.95); box-shadow: 0 0 18px rgba(56, 189, 248, 0.5); }
+}
+.lock-indicator { font-size: 13px; animation: pulse-glow 1.5s infinite; }
+.lock-label { font-size: 10px; color: var(--text-dim); }
+.target-lock-bar strong { font-size: 12px; color: #fff; font-family: monospace; letter-spacing: 0.3px; }
+.lock-meta { font-size: 10px; color: var(--accent-cyan); }
+.btn-unlock-target {
+  background: transparent;
+  border: none;
+  color: #f87171;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: all 0.15s;
+}
+.btn-unlock-target:hover { color: #fff; transform: scale(1.2); }
+
+/* 时间轴无级连续与步长粒度模式切换胶囊 */
+.gfw-granularity-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(14, 25, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 2px 4px;
+}
+.granularity-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+.gfw-gran-btn {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 7px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.gfw-gran-btn:hover {
+  color: #fff;
+}
+.gfw-gran-btn.active {
+  background: rgba(56, 189, 248, 0.25);
+  color: var(--accent-cyan);
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+/* ============================================================
+   GIS 空间要素分层样式 (S-52 电子海图规范与高保真制图学)
+   ============================================================ */
+
+/* 图层坞子分组标题 */
+.dock-subgroup-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-cyan);
+  margin-top: 8px;
+  margin-bottom: 4px;
+  padding-left: 2px;
+  border-left: 2px solid var(--accent-cyan);
+}
+
+/* 休斯顿主航道与深水通航水系 (Fairway & Dredged Areas) */
+.gis-fairway-polygon {
+  stroke: #38bdf8 !important;
+  stroke-width: 1.5 !important;
+  stroke-dasharray: 4, 4 !important;
+  fill: #0284c7 !important;
+  fill-opacity: 0.18 !important;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+.gis-fairway-polygon:hover {
+  fill-opacity: 0.4 !important;
+  stroke-width: 2.5 !important;
+  stroke: #ffffff !important;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+}
+
+/* 法定避风与待泊锚地 (Anchorage Areas) */
+.gis-anchorage-polygon {
+  stroke: #facc15 !important;
+  stroke-width: 2 !important;
+  stroke-dasharray: 8, 6 !important;
+  fill: #eab308 !important;
+  fill-opacity: 0.18 !important;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+.gis-anchorage-polygon:hover {
+  fill-opacity: 0.42 !important;
+  stroke-width: 3 !important;
+  stroke: #ffffff !important;
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.7));
+}
+
+/* 锚位中心发光标 ⚓ (Anchorage Centroid Beacon) */
+.anchorage-center-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(250, 204, 21, 0.8);
+  border-radius: 12px;
+  padding: 2px 7px;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.4), inset 0 0 6px rgba(250, 204, 21, 0.2);
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.anchorage-center-badge:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.8);
+}
+.anchorage-center-badge .anchor-icon {
+  font-size: 13px;
+  color: #facc15;
+  filter: drop-shadow(0 0 4px #facc15);
+}
+.anchorage-center-badge .anchor-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fef08a;
+  letter-spacing: 0.3px;
+}
+
+/* 通航推荐中心中轴线 (Navigation Centerlines) */
+.gis-nav-line {
+  stroke: #38bdf8 !important;
+  stroke-width: 2.2 !important;
+  stroke-dasharray: 6, 6 !important;
+  opacity: 0.85;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gis-nav-line:hover {
+  stroke: #ffffff !important;
+  stroke-width: 3.5 !important;
+  opacity: 1;
+  filter: drop-shadow(0 0 8px #38bdf8);
+}
+
+/* AtoN 助航灯桩与浮标设施 (Aids to Navigation) */
+.gis-navaid-beacon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px #22c55e, 0 0 16px #22c55e;
+  animation: navaid-blink 2s infinite ease-in-out;
+  cursor: pointer;
+}
+@keyframes navaid-blink {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 14px #22c55e, 0 0 24px #4ade80; }
+}
+
+/* 突堤码头与作业区面域 (Docks & Piers) */
+.gis-dock-polygon {
+  stroke: #fb923c !important;
+  stroke-width: 1.5 !important;
+  fill: #ea580c !important;
+  fill-opacity: 0.22 !important;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.gis-dock-polygon:hover {
+  fill-opacity: 0.45 !important;
+  stroke-width: 2.5 !important;
+  stroke: #ffffff !important;
+}
+
+/* 港区总管控范围外边界 (Port Extent Boundary) */
+.gis-port-boundary-polygon {
+  stroke: #38bdf8 !important;
+  stroke-width: 2.4 !important;
+  stroke-dasharray: 10, 8 !important;
+  fill: transparent !important;
+  pointer-events: none;
+}
+
+/* 泊位 180 米安全作业缓冲圈 (Berth Buffer Circles) */
+.gis-berth-buffer {
+  stroke: #38bdf8 !important;
+  stroke-width: 1.4 !important;
+  stroke-dasharray: 3, 3 !important;
+  fill: #0284c7 !important;
+  fill-opacity: 0.18 !important;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.gis-berth-buffer:hover {
+  fill-opacity: 0.4 !important;
+  stroke-width: 2.2 !important;
+  stroke: #ffffff !important;
+}
+
+/* GIS 要素被选中激活高亮遮罩 (Active Selection Outline) */
+.gis-feature-active-highlight {
+  stroke: #ffffff !important;
+  stroke-width: 3.5 !important;
+  fill-opacity: 0.48 !important;
+  filter: drop-shadow(0 0 14px #38bdf8) drop-shadow(0 0 24px #38bdf8) !important;
+  animation: gis-pulse 2s infinite ease-in-out;
+}
+@keyframes gis-pulse {
+  0%, 100% { stroke-width: 3.2px; }
+  50% { stroke-width: 4.5px; }
+}
+
+/* ============================================================
+   海事空间要素抽屉 (GIS Feature Inspector Drawer)
+   ============================================================ */
+.gis-drawer-card {
+  position: absolute;
+  top: 68px;
+  right: 18px;
+  width: 340px;
+  max-height: calc(100vh - 210px);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  animation: slide-in-right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 1px rgba(56, 189, 248, 0.4);
+}
+@keyframes slide-in-right {
+  from { transform: translateX(25px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.gis-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+.gis-type-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(250, 204, 21, 0.18);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  letter-spacing: 0.3px;
+}
+.gis-title {
+  font-size: 14px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gis-enc-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: monospace;
+}
+
+.gis-meta-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+/* 区内船舶拓扑感知板块 */
+.gis-vessels-section {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+  flex: 1;
+  min-height: 120px;
+  max-height: 200px;
+  overflow: hidden;
+}
+.gis-vessels-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+.gis-vessels-count {
+  font-size: 11px;
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.15);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.gis-vessels-subsummary {
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.gis-vessels-subsummary b {
+  color: #fff;
+}
+.gis-vessels-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 2px;
+}
+.gis-vessel-mini-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.gis-vessel-mini-item:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.5);
+  transform: translateX(2px);
+}
+.gis-vessel-mini-name {
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+.gis-vessel-mini-meta {
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: monospace;
+}
+
+.btn-gis-focus {
+  width: 100%;
+  padding: 7px 12px;
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 6px;
+  color: var(--accent-cyan);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-gis-focus:hover {
+  background: rgba(56, 189, 248, 0.35);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+/* 船舶卡片内空间水域语义标签 */
+.card-spatial-region {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  margin: 6px 0 10px 0;
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 6px;
+  font-size: 11px;
+}
+.region-badge-icon {
+  font-size: 13px;
+}
+.region-badge-label {
+  color: var(--text-dim);
+}
+.region-badge-name {
+  color: var(--accent-cyan);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* ============================================================
+   S-52 电子海图图例悬浮窗 (Maritime Legend Card)
+   ============================================================ */
+.maritime-legend-card {
+  position: absolute;
+  bottom: 125px;
+  left: 310px;
+  width: 220px;
+  z-index: 900;
+  padding: 8px 10px;
+  font-size: 11px;
+  transition: all 0.25s ease;
+}
+.legend-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.legend-title-icon {
+  font-size: 13px;
+  margin-right: 4px;
+}
+.legend-title-text {
+  font-weight: 700;
+  color: #fff;
+  font-size: 11px;
+  flex: 1;
+}
+.legend-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.legend-card-body {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-subtle);
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+  overflow: hidden;
+}
+.legend-card-body.collapsed {
+  display: none;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-size: 10px;
+}
+.legend-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 12px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.symbol-fairway {
+  background: rgba(14, 165, 233, 0.4);
+  border: 1px dashed #38bdf8;
+}
+.symbol-anchorage {
+  color: #facc15;
+  font-size: 12px;
+}
+.symbol-navline {
+  color: #38bdf8;
+  font-weight: 700;
+  letter-spacing: -2px;
+}
+.symbol-navaid {
+  color: #22c55e;
+  font-size: 14px;
+  filter: drop-shadow(0 0 4px #22c55e);
+}
+.symbol-dock {
+  color: #fb923c;
+  font-size: 11px;
+}
+.symbol-berth {
+  color: #38bdf8;
+  font-size: 12px;
+}
+.symbol-boundary {
+  color: #38bdf8;
+  letter-spacing: -1px;
+}
+
+/* Brand alignment: reuse the primary agent's calm teal, paper and ink palette. */
+:root {
+  --workspace-teal: #0b7777;
+  --workspace-teal-bright: #0e8a80;
+  --workspace-ink: #1b2b35;
+  --workspace-muted: #65747d;
+  --workspace-paper: #ffffff;
+  --workspace-soft: #e9f4f2;
+  --workspace-line: #d9e6e3;
+  --workspace-shadow: 0 12px 28px rgba(27, 57, 56, 0.13);
+}
+
+.topbar { background: rgba(255,255,255,.96); border-bottom-color: #e4e9e9; box-shadow: 0 2px 12px rgba(27,57,56,.08); }
+.back-link { background: #f4faf8; border-color: #cfe3de; color: var(--workspace-teal); }
+.back-link:hover { background: var(--workspace-soft); color: #075d5d; }
+.topbar-advisory { background: #f7faf9; border-color: #e1eae8; }
+.advisory-tag { color: #805f24; background: #fff6df; }
+.kpi-card { background: #f8fbfa; border-color: #e1eae8; }
+.ai-entry-button,.copilot-composer-foot button { background: var(--workspace-teal); }
+.ai-entry-button:hover,.copilot-composer-foot button:hover { background: #075d5d; }
+
+.map-action-rail { background: rgba(255,255,255,.95); border-color: #d9e6e3; box-shadow: var(--workspace-shadow); }
+.rail-button { color: #658086; }
+.rail-button:hover,.rail-button.is-active { color: var(--workspace-teal); background: var(--workspace-soft); }
+
+.sidebar-vessels,.layer-dock,.ai-copilot-panel,.gis-drawer-card,.vessel-card,.weather-picker-card {
+  color: var(--workspace-ink); background: rgba(255,255,255,.97); border-color: #d9e6e3; box-shadow: var(--workspace-shadow);
+}
+.sidebar-header h3,.dock-title,.copilot-header h2 { color: var(--workspace-ink); }
+.vessel-total-tag { color: var(--workspace-teal); background: var(--workspace-soft); border-color: #c8e1db; }
+.search-box input { color: var(--workspace-ink); background: #fff; border-color: #d7e4e1; }
+.search-box input::placeholder { color: #9aa8ac; }
+.underway-label { color: #32766c; }
+.v-filter-btn { color: #63757a; background: #f6f9f8; border-color: #e1e9e7; }
+.v-filter-btn:hover { color: var(--workspace-teal); border-color: #a8cdc5; }
+.v-filter-btn.active { color: var(--workspace-teal); background: var(--workspace-soft); border-color: #98c8bd; }
+.vessel-item { background: #fff; border-color: #e3ebe9; box-shadow: none; }
+.vessel-item:hover,.vessel-item.active-selected { background: #f4faf8; border-color: #a9cdc5; transform: none; }
+.vessel-item-name,.vessel-item strong { color: #284047; }
+.vessel-item-meta,.vessel-item-sub { color: #718188; }
+
+.layer-dock { background: rgba(255,255,255,.98); }
+.dock-header { border-bottom: 1px solid #edf1f0; }
+.dock-group-title { color: #356267; }
+.dock-subgroup-title { color: #60747a; }
+.layer-toggle-row { color: #40575d; }
+.layer-toggle-row:hover { background: #f0f7f5; }
+.bmap-btn { color: #527078; background: #f7faf9; border-color: #dce8e5; }
+.bmap-btn.active { color: var(--workspace-teal); background: var(--workspace-soft); border-color: #a8cec5; }
+.dock-legend { background: #f4f9f7; border-color: #dbe9e5; }
+
+.ai-copilot-panel { color: var(--workspace-ink); }
+.copilot-header { border-bottom-color: #e6eeeb; }
+.copilot-eyebrow,.copilot-message-label { color: var(--workspace-teal); }
+.copilot-close { color: #557177; background: #f0f5f3; }
+.copilot-context { background: #f1f8f6; border-color: #d3e8e2; }
+.copilot-context small { color: #75878b; }
+.copilot-starters button { color: #42636a; background: #fff; border-color: #d7e5e2; }
+.copilot-starters button:hover { color: var(--workspace-teal); background: var(--workspace-soft); border-color: #9fc8bf; }
+.copilot-welcome { background: linear-gradient(145deg,#f2faf7,#fbfdfc); border: 1px solid #e0ece8; }
+.copilot-welcome p { color: #64777c; }
+.copilot-message { background: #f5f8f7; border: 1px solid #e4ece9; }
+.copilot-message.user { background: #eaf5f2; border-color: #d5e9e3; }
+.copilot-message-body { color: #31454b; }
+.copilot-message small { color: #63827d; }
+.copilot-composer { background: #fff; border-color: #cddfda; box-shadow: 0 3px 12px rgba(27,57,56,.06); }
+.copilot-composer textarea { color: var(--workspace-ink); }
+.copilot-composer textarea::placeholder { color: #95a3a6; }
+.copilot-composer-foot span { color: #819195; }
+
+.gfw-timeline-panel { background: rgba(255,255,255,.96); border-color: #d9e6e3; box-shadow: var(--workspace-shadow); }
+.gfw-btn,.gfw-speed-btn,.gfw-gran-btn,.gfw-preset-btn { color: #47636a; background: #f5f9f8; border-color: #dce8e5; }
+.gfw-btn:hover,.gfw-speed-btn.active,.gfw-gran-btn.active,.gfw-preset-btn.active { color: var(--workspace-teal); background: var(--workspace-soft); border-color: #a7cbc2; }
+.gfw-current-display { color: #29444a; background: #f5faf8; border-color: #dbe8e5; }
+.gfw-stage-tag { color: #806226; background: #fff5dc; }
+.gfw-custom-picker input { color: #365158; background: #fff; border-color: #d7e4e1; }
+
+/* Keep the playback timeline fully exposed; content scrolls inside the side drawers. */
+.sidebar-vessels,.layer-dock { bottom: 132px; }
+.ai-copilot-panel { bottom: 126px; }
+.dock-body { max-height: calc(100vh - 278px); }
+@media (max-width: 820px) {
+  .sidebar-vessels,.layer-dock { bottom: 138px; }
+  /* 手机端调查面板改为半高工作台，地图与时间轴仍可同时看到和操作。 */
+  .ai-copilot-panel {
+    top: auto;
+    bottom: 138px;
+    height: min(46vh, 410px);
+    max-height: calc(100vh - 220px);
+    border-radius: 16px;
+  }
+  .copilot-thread { min-height: 0; }
+  .copilot-welcome { padding: 14px; }
+  .dock-body { max-height: calc(100vh - 294px); }
+}
+.maritime-legend-card { color: #4b666c; background: rgba(255,255,255,.95); border-color: #d9e6e3; box-shadow: var(--workspace-shadow); }
+.legend-title-text { color: #2e5259; }
+
+@media (max-width: 820px) {
+  .topbar { padding: 0 14px; }
+  .back-link { padding: 6px 9px; }
+  .brand strong { font-size: 14px; }
+}
+
+/* v3 final cascade overrides. Kept last so the legacy dashboard rules above
+   remain available while the task-first workspace takes visual precedence. */
+[hidden] { display: none !important; }
+.topbar {
+  height: 68px;
+  padding: 0 18px;
+  color: var(--workspace-ink);
+  background: rgba(248, 252, 251, 0.97);
+  border-bottom: 1px solid rgba(16, 42, 47, 0.12);
+  box-shadow: 0 5px 18px rgba(7, 31, 36, 0.12);
+}
+.brand strong { color: var(--workspace-ink); font-size: 15px; letter-spacing: 0; }
+.brand .subtitle { color: #60767a; }
+.back-link { color: var(--workspace-teal); background: #e8f5f3; border-color: #c3e4e0; }
+.back-link:hover { color: #075c62; background: #d7efec; }
+.live-pulse { background: var(--workspace-teal-bright); box-shadow: 0 0 0 4px rgba(32,184,178,.13); animation: none; }
+.topbar-advisory { max-width: 350px; background: #f3f7f6; border-color: #dce8e6; }
+.advisory-tag { color: #8a5a13; background: #fff1cc; }
+.advisory-text { color: #52686c; }
+.kpi-card { min-width: 92px; text-align: left; background: #f5f9f8; border-color: #dce8e6; border-radius: 9px; }
+.kpi-label { color: #718489; }
+.highlight-cyan strong,.highlight-green strong,.highlight-red strong,.highlight-purple strong { color: var(--workspace-ink); }
+.ai-entry-button {
+  height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 15px;
+  border: 0; border-radius: 9px; background: var(--workspace-teal); color: #fff;
+  font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(12,124,130,.23);
+}
+.ai-entry-dot { width: 7px; height: 7px; border-radius: 50%; background: #86f0d1; box-shadow: 0 0 0 4px rgba(134,240,209,.16); }
+.main-viewport { height: calc(100vh - 68px); }
+
+.map-action-rail {
+  left: 16px; top: 16px; z-index: 1100; display: flex; flex-direction: column; gap: 5px;
+  padding: 6px; border: 1px solid var(--workspace-line); border-radius: 13px;
+  background: rgba(8, 28, 34, 0.94); box-shadow: var(--workspace-shadow); backdrop-filter: blur(14px);
+}
+.rail-button {
+  width: 48px; height: 48px; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 2px; border: 0; border-radius: 9px; color: #a9bec1;
+  background: transparent; text-decoration: none; cursor: pointer;
+}
+.rail-button:hover,.rail-button.is-active { color: #fff; background: rgba(32,184,178,.19); }
+.sidebar-vessels {
+  top: 16px; left: 78px; bottom: 100px; width: 294px; z-index: 700;
+  border-radius: 13px; background: var(--workspace-panel); border-color: var(--workspace-line);
+  box-shadow: var(--workspace-shadow);
+}
+.sidebar-vessels.collapsed { transform: translateX(-390px); }
+.sidebar-toggle-btn { display: none; }
+.v-filter-btn { border-radius: 999px; padding: 5px 9px; }
+.v-filter-btn.active { background: rgba(32,184,178,.18); border-color: var(--workspace-teal-bright); color: #8be2dc; }
+
+.layer-dock {
+  top: 16px; left: 78px; right: auto; bottom: 100px; width: 300px; z-index: 800;
+  border-radius: 13px; background: var(--workspace-panel); border-color: var(--workspace-line);
+  box-shadow: var(--workspace-shadow); opacity: 0; transform: translateX(-24px);
+  pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+}
+.layer-dock.workspace-open { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.dock-body { max-height: calc(100vh - 245px); overflow-y: auto; }
+
+.ai-copilot-panel {
+  top: 16px; right: 16px; bottom: 100px; z-index: 1050; width: min(410px, calc(100vw - 110px));
+  color: #eaf5f4; border: 1px solid var(--workspace-line); border-radius: 16px;
+  background: var(--workspace-panel); box-shadow: var(--workspace-shadow); backdrop-filter: blur(18px);
+}
+.ai-copilot-panel[hidden] { display: none !important; }
+.gis-drawer-card,.vessel-card,.weather-picker-card {
+  right: 16px; left: auto; border-radius: 14px; background: var(--workspace-panel);
+  border-color: var(--workspace-line); box-shadow: var(--workspace-shadow);
+}
+.maritime-legend-card { left: auto; right: 16px; bottom: 100px; border-radius: 11px; background: rgba(9,28,34,.9); border-color: var(--workspace-line); }
+.gfw-timeline-panel {
+  left: 78px; right: 16px; bottom: 14px; border-radius: 13px;
+  background: rgba(9,28,34,.94); border-color: var(--workspace-line); box-shadow: var(--workspace-shadow);
+}
+
+@media (max-width: 1180px) {
+  .topbar-advisory,.topbar-kpis .kpi-card:nth-child(n+3) { display: none; }
+  .ai-copilot-panel { width: 380px; }
+}
+@media (max-width: 820px) {
+  .topbar-kpis .kpi-card { display: none; }
+  .brand .subtitle { display: none; }
+  .sidebar-vessels { right: 12px; left: 72px; width: auto; }
+  .ai-copilot-panel { left: 72px; right: 12px; width: auto; }
+  .gfw-timeline-panel { left: 72px; }
+  .gis-drawer-card,.vessel-card,.weather-picker-card { left: 72px; right: 12px; width: auto; }
+}
+
+/* Final brand pass — intentionally last to override the legacy dark-map skin. */
+.map-action-rail {
+  background: rgba(255, 255, 255, .96);
+  border-color: #d9e6e3;
+}
+.rail-button { color: #60787c; }
+.rail-button:hover,.rail-button.is-active {
+  color: #0b7777;
+  background: #e9f4f2;
+}
+.sidebar-vessels,.layer-dock,.ai-copilot-panel,
+.gis-drawer-card,.vessel-card,.weather-picker-card {
+  color: #1b2b35;
+  background: rgba(255, 255, 255, .98);
+  border-color: #d9e6e3;
+}
+.sidebar-header h3,.dock-title,.copilot-header h2 { color: #1b2b35; }
+.vessel-total-tag { color: #0b7777; background: #e9f4f2; border-color: #c8e1db; }
+.search-box input { color: #1b2b35; background: #fff; border-color: #d7e4e1; }
+.search-box input::placeholder { color: #9aa8ac; }
+.underway-label { color: #32766c; }
+.v-filter-btn { color: #63757a; background: #f6f9f8; border-color: #e1e9e7; }
+.v-filter-btn.active { color: #0b7777; background: #e9f4f2; border-color: #98c8bd; }
+.vessel-item { background: #fff; border-color: #e3ebe9; box-shadow: none; }
+.vessel-item:hover,.vessel-item.active-selected { background: #f4faf8; border-color: #a9cdc5; transform: none; }
+.vessel-item-name,.vessel-item strong { color: #284047; }
+.vessel-item-meta,.vessel-item-sub { color: #718188; }
+.dock-header { border-bottom-color: #edf1f0; }
+.dock-group-title { color: #356267; }
+.dock-subgroup-title { color: #60747a; }
+.layer-toggle-row { color: #40575d; }
+.layer-toggle-row:hover { background: #f0f7f5; }
+.bmap-btn { color: #527078; background: #f7faf9; border-color: #dce8e5; }
+.bmap-btn.active { color: #0b7777; background: #e9f4f2; border-color: #a8cec5; }
+.dock-presets { padding-bottom: 12px; border-bottom: 1px solid #e7efec; }
+.map-preset-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 8px; }
+.map-preset-btn {
+  min-height: 31px; padding: 6px 8px; border: 1px solid #dce8e5; border-radius: 8px;
+  color: #527078; background: #f7faf9; font: inherit; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: color .16s ease, background .16s ease, border-color .16s ease;
+}
+.map-preset-btn:hover,.map-preset-btn.active { color: #0b7777; background: #e9f4f2; border-color: #9fc8bf; }
+.dock-hint { margin: 8px 1px 0; color: #7b8a8d; font-size: 11px; line-height: 1.45; }
+.dock-advanced { margin-top: 7px; padding-top: 7px; border-top: 1px dashed #d9e7e3; }
+.dock-advanced summary { color: #547278; font-size: 12px; font-weight: 700; cursor: pointer; list-style: none; }
+.dock-advanced summary::-webkit-details-marker { display: none; }
+.dock-advanced summary::before { content: "›"; display: inline-block; margin-right: 7px; color: #0b7777; font-size: 16px; line-height: 10px; transform: rotate(0deg); transition: transform .16s ease; }
+.dock-advanced[open] summary { color: #0b7777; }
+.dock-advanced[open] summary::before { transform: rotate(90deg); }
+.dock-advanced .layer-toggle-row { margin-top: 6px; }
+.dock-advanced-compact { margin-top: 5px; }
+.dock-legend { background: #f4f9f7; border-color: #dbe9e5; }
+.copilot-header { border-bottom-color: #e6eeeb; }
+.copilot-eyebrow,.copilot-message-label { color: #0b7777; }
+.copilot-close { color: #557177; background: #f0f5f3; }
+.copilot-context { background: #f1f8f6; border-color: #d3e8e2; }
+.copilot-context small { color: #75878b; }
+.copilot-starters button { color: #42636a; background: #fff; border-color: #d7e5e2; }
+.copilot-starters button:hover { color: #0b7777; background: #e9f4f2; border-color: #9fc8bf; }
+.copilot-welcome { background: linear-gradient(145deg,#f2faf7,#fbfdfc); border-color: #e0ece8; }
+.copilot-welcome p { color: #64777c; }
+.copilot-message { background: #f5f8f7; border-color: #e4ece9; }
+.copilot-message.user { background: #eaf5f2; border-color: #d5e9e3; }
+.copilot-message-body { color: #31454b; }
+.copilot-message small { color: #63827d; }
+.copilot-composer { background: #fff; border-color: #cddfda; box-shadow: 0 3px 12px rgba(27,57,56,.06); }
+.copilot-composer textarea { color: #1b2b35; }
+.copilot-composer textarea::placeholder { color: #95a3a6; }
+.copilot-composer-foot span { color: #819195; }
+.maritime-legend-card,.gfw-timeline-panel {
+  color: #4b666c;
+  background: rgba(255,255,255,.96);
+  border-color: #d9e6e3;
+}
+.legend-title-text { color: #2e5259; }
+.gfw-btn,.gfw-speed-btn,.gfw-gran-btn,.gfw-preset-btn { color: #47636a; background: #f5f9f8; border-color: #dce8e5; }
+.gfw-btn:hover,.gfw-speed-btn.active,.gfw-gran-btn.active,.gfw-preset-btn.active { color: #0b7777; background: #e9f4f2; border-color: #a7cbc2; }
+.gfw-current-display { color: #29444a; background: #f5faf8; border-color: #dbe8e5; }
+.gfw-stage-tag { color: #806226; background: #fff5dc; }
+.gfw-custom-picker input { color: #365158; background: #fff; border-color: #d7e4e1; }
+
+/* 默认地图采用“目标优先”：GIS 仅作柔和空间参照，绝不压过 AIS 船舶标记。 */
+.gis-fairway-polygon { stroke: #3d8ca1 !important; stroke-width: 1px !important; stroke-dasharray: 3, 5 !important; fill: #4ba7bd !important; fill-opacity: .055 !important; }
+.gis-anchorage-polygon { stroke: #b38a31 !important; stroke-width: 1px !important; stroke-dasharray: 5, 6 !important; fill: #e7c66d !important; fill-opacity: .055 !important; }
+.gis-port-boundary-polygon { stroke: #4c8790 !important; stroke-width: 1.25px !important; stroke-dasharray: 5, 8 !important; opacity: .55 !important; }
+.leaflet-vessel-icon { filter: drop-shadow(0 1px 2px rgba(8, 47, 50, .42)); }
+
+/* 产品化航运表达：航道以中心线表示，锚地以紧凑符号表示；范围面仅作精确核验。 */
+.anchorage-center-badge {
+  display: grid; place-items: center; width: 22px; height: 22px; padding: 0;
+  border: 1px solid rgba(250, 204, 21, .82); border-radius: 50%; background: rgba(42, 35, 21, .88);
+  box-shadow: 0 2px 8px rgba(84, 61, 12, .36); cursor: pointer;
+}
+.anchorage-center-badge .anchor-icon { font-size: 12px; line-height: 1; color: #f7ca4a; filter: none; }
+.anchorage-center-badge .anchor-label { display: none; }
+.gis-nav-line { stroke: #69c6d7 !important; stroke-width: 1.45px !important; stroke-dasharray: 4, 7 !important; opacity: .78; }
+.gis-nav-line:hover { stroke: #f3fbfa !important; stroke-width: 2.6px !important; filter: drop-shadow(0 0 5px rgba(105,198,215,.72)); }
+
+.weather-probe-marker { background: transparent !important; border: 0 !important; }
+.weather-probe-pin {
+  display: block; width: 32px; height: 42px; overflow: visible;
+  filter: drop-shadow(0 4px 5px rgba(11,45,49,.3));
+}
+.weather-probe-pin path { fill: #0b7777; stroke: #fff; stroke-width: 2; stroke-linejoin: round; }
+.weather-probe-pin circle { fill: #fff; stroke: #d6ebe7; stroke-width: 1; }
+.leaflet-marker-draggable .weather-probe-pin { cursor: grab; }
+.leaflet-marker-draggable.leaflet-drag-target .weather-probe-pin { cursor: grabbing; filter: drop-shadow(0 7px 8px rgba(11,45,49,.38)); }
+
+.sidebar-header { gap: 8px; }
+.sidebar-header h3 { min-width: 0; }
+.sidebar-header h3 { order: 1; }
+.sidebar-close-btn { order: 2; margin-left: auto; }
+.vessel-total-tag { order: 3; margin-left: 0; white-space: nowrap; }
+.sidebar-close-btn {
+  flex: 0 0 26px; width: 26px; height: 26px; display: grid; place-items: center;
+  padding: 0; border: 1px solid #d9e6e3; border-radius: 7px; color: #60787c;
+  background: #f5f9f8; font-size: 18px; line-height: 1; cursor: pointer;
+}
+.sidebar-close-btn:hover { color: #0b7777; border-color: #9fc8bf; background: #e9f4f2; }
+
+/* 时间轴是工作台的持续可操作区：任何侧栏都必须止于它的上沿，
+   内容不足时在抽屉内部滚动，而不是盖住时间标签或拖拽手柄。 */
+.sidebar-vessels,
+.layer-dock {
+  bottom: 210px;
+  min-height: 0;
+}
+.ai-copilot-panel {
+  bottom: 210px;
+  min-height: 0;
+}
+.vessel-card,
+.weather-picker-card,
+.gis-drawer-card,
+.maritime-legend-card {
+  bottom: 210px;
+  max-height: calc(100vh - 294px);
+}
+.dock-body { max-height: calc(100vh - 356px); overscroll-behavior: contain; }
+.sidebar-vessels .vessel-list { overscroll-behavior: contain; }
+
+@media (max-width: 820px) {
+  .sidebar-vessels,
+  .layer-dock,
+  .ai-copilot-panel,
+  .vessel-card,
+  .weather-picker-card,
+  .gis-drawer-card,
+  .maritime-legend-card { bottom: 222px; }
+  .ai-copilot-panel { top: auto; height: min(42vh, 350px); }
+  .dock-body { max-height: calc(100vh - 366px); }
+}
+
+/* Explicit map tools and movable workspace panels. */
+.rail-pin-icon {
+  position: relative; display: block; width: 15px; height: 18px; margin-bottom: 1px;
+}
+.rail-pin-icon::before {
+  content: ""; position: absolute; left: 2px; top: 0; width: 11px; height: 11px;
+  border: 1.8px solid currentColor; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+}
+.rail-pin-icon::after {
+  content: ""; position: absolute; left: 6px; top: 4px; width: 3px; height: 3px;
+  border-radius: 50%; background: currentColor;
+}
+#map.map-probe-active { cursor: crosshair; }
+.map-tool-status {
+  position: absolute; z-index: 1080; top: 18px; left: 82px; display: flex; align-items: center;
+  gap: 7px; min-height: 34px; padding: 7px 11px; border: 1px solid #b9dcd5; border-radius: 10px;
+  background: rgba(255,255,255,.96); color: #58706f; box-shadow: 0 8px 22px rgba(27,59,55,.14);
+  backdrop-filter: blur(12px); font-size: 10px; pointer-events: none;
+}
+.map-tool-status[hidden] { display: none !important; }
+.map-tool-status strong { color: #0b6667; font-size: 11px; }
+.map-tool-status kbd { margin-left: 3px; padding: 1px 5px; border: 1px solid #cbdad7; border-bottom-width: 2px; border-radius: 4px; background: #f6faf9; color: #556b69; font: 9px ui-monospace,Consolas,monospace; }
+.tool-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #0b8a82; box-shadow: 0 0 0 3px rgba(11,138,130,.12); }
+.panel-drag-handle { cursor: grab; user-select: none; touch-action: none; }
+.panel-drag-handle::after { content: "⋮⋮"; margin-left: 7px; color: #91a7a4; font-size: 10px; letter-spacing: -2px; opacity: .72; }
+.panel-drag-handle:active,.is-panel-dragging .panel-drag-handle { cursor: grabbing; }
+.is-panel-dragging { transition: none !important; box-shadow: 0 16px 38px rgba(20,55,50,.24) !important; }
+.is-panel-dragging .panel-drag-handle::after { color: #0b7777; opacity: 1; }
+.dock-header.panel-drag-handle::after { order: 2; margin-left: auto; }
+.dock-header.panel-drag-handle .dock-collapse-btn { order: 3; }
+.card-header.panel-drag-handle::after,.legend-card-header.panel-drag-handle::after { order: 2; margin-left: auto; }
+.card-header.panel-drag-handle .card-close,.legend-card-header.panel-drag-handle .legend-toggle-btn { order: 3; }
+.weather-picker-card { top: 16px; bottom: auto !important; height: auto; max-height: min(420px,calc(100vh - 250px)); }
+.vessel-card { top: auto !important; bottom: 210px; height: auto; }
+.gis-drawer-card { height: auto; }
+@media (max-width: 680px) {
+  .map-tool-status { left: 72px; right: 12px; width: auto; }
+  .map-tool-status span:not(.tool-status-dot),.map-tool-status kbd { display: none; }
+  .weather-picker-card { top: 16px; bottom: auto !important; max-height: min(310px,calc(100vh - 250px)); overflow-y: auto; }
+  .vessel-card { top: 16px !important; bottom: auto; max-height: min(360px,calc(100vh - 250px)); overflow-y: auto; }
+}
+
+/* 航迹时段多粒度选择器与遥感时相直达组件 */
+.track-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+.track-unified-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.btn-track-replay,
+.btn-track-cruise {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-track-replay {
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(250, 204, 21, 0.5);
+  color: #fde047;
+}
+.btn-track-replay:hover {
+  background: rgba(234, 179, 8, 0.3);
+  border-color: #facc15;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+}
+.btn-track-cruise {
+  background: rgba(2, 132, 199, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
+}
+.btn-track-cruise:hover {
+  background: rgba(2, 132, 199, 0.35);
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+.btn-track-cruise.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+}
+.track-unified-hint {
+  font-size: 10px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 统一全域连续时空视窗标识 (Unified Global Window Badge) */
+.gfw-unified-window-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #cbd5e1;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.gfw-unified-window-badge .window-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.5; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+.remote-timeline-helper {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px dashed rgba(56, 189, 248, 0.3);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.remote-helper-title {
+  font-size: 10px;
+  color: #94a3b8;
+}
+.remote-helper-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid #0284c7;
+  color: #38bdf8;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.remote-helper-pill:hover {
+  background: #0284c7;
+  color: #fff;
+}
+
+/* 高科技流光航迹与平滑巡航光标动画引擎 */
+@keyframes trackDashFlow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -32px;
+  }
+}
+
+.track-flowing-line {
+  stroke-dasharray: 6, 10 !important;
+  animation: trackDashFlow 1.2s linear infinite !important;
+  pointer-events: none;
+}
+
+.track-glow-base {
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.6)) drop-shadow(0 0 12px rgba(250, 204, 21, 0.3));
+}
+
+@keyframes cruisePulseRing {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.vessel-cruise-pulse-marker {
+  pointer-events: none;
+  z-index: 10001 !important;
+}
+
+.vessel-cruise-pulse-inner {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cruise-pulse-ring {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: cruisePulseRing 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+.cruise-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8, 0 0 4px #fff;
+  border: 1.5px solid #ffffff;
+}
+
+/* 航迹沿线整点打标点微粒 (Smooth Waypoints) */
+.track-waypoint-badge {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #facc15;
+  border: 1px solid #ffffff;
+  box-shadow: 0 0 4px rgba(250, 204, 21, 0.8);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.track-waypoint-badge:hover {
+  transform: scale(2);
+  background: #38bdf8;
+  border-color: #ffffff;
+}
+
+/* 专属高精 60 FPS 巡航发光船模 */
+.cruise-vessel-marker-root {
+  pointer-events: none;
+  z-index: 20000 !important;
+}
+
+.cruise-vessel-anchor {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cruise-vessel-wrapper {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  transition: transform 0.05s linear;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cruise-vessel-body {
+  width: 14px;
+  height: 24px;
+  background: linear-gradient(180deg, #fef08a 0%, #eab308 50%, #ca8a04 100%);
+  clip-path: polygon(50% 0%, 100% 30%, 85% 100%, 15% 100%, 0% 30%);
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.95), 0 0 4px #ffffff;
+}
+
+.cruise-vessel-wake {
+  position: absolute;
+  bottom: 0px;
+  width: 22px;
+  height: 16px;
+  border-left: 2px dashed rgba(56, 189, 248, 0.7);
+  border-right: 2px dashed rgba(56, 189, 248, 0.7);
+  border-bottom: 2px solid rgba(56, 189, 248, 0.9);
+  border-radius: 0 0 50% 50%;
+  animation: cruiseWakePulse 0.8s ease-out infinite;
+}
+
+@keyframes cruiseWakePulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.cruise-vessel-pill {
+  position: absolute;
+  bottom: -18px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid #facc15;
+  color: #facc15;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   态势研判简报与数据审计指挥抽屉 (Situation Intelligence Briefing Drawer)
+   ========================================================================== */
+
+/* 1. 顶栏简报入口按钮 */
+.btn-briefing {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 16px;
+  background: linear-gradient(135deg, rgba(14, 116, 144, 0.9) 0%, rgba(13, 148, 136, 0.95) 100%);
+  color: #f0fdfa;
+  border: 1px solid rgba(45, 212, 191, 0.5);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.btn-briefing:hover {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 1) 0%, rgba(20, 184, 166, 1) 100%);
+  border-color: rgba(94, 234, 212, 0.8);
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-briefing:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+.briefing-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #5eead4;
+  box-shadow: 0 0 8px #2dd4bf;
+  animation: briefingPulse 2s infinite ease-in-out;
+}
+
+@keyframes briefingPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+.briefing-icon {
+  font-size: 14px;
+}
+
+/* 2. 简报抽屉全局容器 */
+.briefing-drawer {
+  position: fixed;
+  top: 68px;
+  right: 0;
+  bottom: 0;
+  width: 780px;
+  max-width: 95vw;
+  background: rgba(6, 14, 26, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.7);
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(105%);
+  transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.briefing-drawer.open {
+  transform: translateX(0);
+}
+
+.briefing-drawer-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 抽屉头部 */
+.briefing-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: rgba(11, 23, 40, 0.95);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.briefing-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.briefing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.briefing-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+.briefing-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.2px;
+}
+
+.briefing-subtitle {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* 顶部操作按钮 */
+.briefing-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-briefing-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-briefing-action:hover {
+  background: rgba(51, 65, 85, 0.9);
+  color: #f8fafc;
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.btn-briefing-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 6px;
+  color: #f87171;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-briefing-close:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+/* 简报滚动主体 */
+.briefing-drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.3) rgba(15, 23, 42, 0.5);
+}
+
+.briefing-drawer-content::-webkit-scrollbar {
+  width: 6px;
+}
+.briefing-drawer-content::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+.briefing-drawer-content::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.3);
+  border-radius: 3px;
+}
+
+/* 3. 加载中与智能体流水线动画 */
+.briefing-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 32px;
+}
+
+.briefing-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(56, 189, 248, 0.2);
+  border-top-color: #38bdf8;
+  border-radius: 50%;
+  animation: briefingSpin 1s linear infinite;
+}
+
+@keyframes briefingSpin {
+  to { transform: rotate(360deg); }
+}
+
+.briefing-pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 460px;
+  width: 100%;
+}
+
+.pipeline-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: 8px;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.pipeline-step.active {
+  opacity: 1;
+  border-color: rgba(56, 189, 248, 0.6);
+  background: rgba(14, 116, 144, 0.2);
+  box-shadow: 0 4px 16px rgba(14, 116, 144, 0.2);
+}
+
+.pipeline-step .step-icon {
+  font-size: 20px;
+}
+
+.pipeline-step .step-text strong {
+  display: block;
+  font-size: 13px;
+  color: #f1f5f9;
+}
+
+.pipeline-step .step-text span {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* 4. 简报各区块通用样式 */
+.briefing-section {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.briefing-section .section-title {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+/* 审计头部与评级卡 */
+.audit-header-row {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.audit-grade-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: rgba(8, 47, 73, 0.45);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 10px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.audit-grade-box.grade-A {
+  background: rgba(6, 78, 59, 0.45);
+  border-color: rgba(52, 211, 153, 0.5);
+}
+
+.audit-grade-box.grade-B {
+  background: rgba(8, 47, 73, 0.45);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.audit-grade-box.grade-C {
+  background: rgba(120, 53, 15, 0.45);
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.audit-grade-box.grade-D {
+  background: rgba(51, 65, 85, 0.45);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+.grade-letter {
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.grade-A .grade-letter { color: #34d399; text-shadow: 0 0 14px rgba(52, 211, 153, 0.7); }
+.grade-B .grade-letter { color: #38bdf8; text-shadow: 0 0 14px rgba(56, 189, 248, 0.7); }
+.grade-C .grade-letter { color: #fbbf24; text-shadow: 0 0 14px rgba(251, 191, 36, 0.7); }
+.grade-D .grade-letter { color: #94a3b8; text-shadow: 0 0 14px rgba(148, 163, 184, 0.7); }
+
+.grade-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.grade-info strong {
+  font-size: 15px;
+  color: #f8fafc;
+}
+
+.grade-info span {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.audit-meta-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  min-width: 220px;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.meta-item span { color: #64748b; }
+.meta-item strong { color: #94a3b8; font-family: monospace; }
+
+/* 四模态健康度体检卡片网格 */
+.modalities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.modality-card {
+  padding: 12px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(56, 189, 248, 0.12);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.2s ease;
+}
+
+.modality-card.status-active {
+  border-color: rgba(52, 211, 153, 0.35);
+  background: rgba(6, 78, 59, 0.15);
+}
+
+.modality-card.status-partial {
+  border-color: rgba(251, 191, 36, 0.35);
+  background: rgba(120, 53, 15, 0.15);
+}
+
+.modality-card.status-missing {
+  border-color: rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.4);
+  opacity: 0.65;
+}
+
+.modality-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.modality-status-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.status-active .modality-status-tag { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+.status-partial .modality-status-tag { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+.status-missing .modality-status-tag { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+
+.modality-detail {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+/* 审计限度与声明框 */
+.audit-limitations-box {
+  padding: 12px 16px;
+  background: rgba(30, 41, 59, 0.6);
+  border-left: 3px solid #fbbf24;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.limitations-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 6px;
+}
+
+.limitations-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* 5. 态势量化 KPI 网格 */
+.briefing-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.briefing-kpi-card {
+  padding: 14px 12px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.briefing-kpi-label {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.briefing-kpi-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: #38bdf8;
+  font-family: monospace;
+}
+
+.briefing-kpi-sub {
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* 6. Markdown 渲染正文 */
+.briefing-markdown-body {
+  color: #e2e8f0;
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.briefing-markdown-body h1,
+.briefing-markdown-body h2,
+.briefing-markdown-body h3,
+.briefing-markdown-body h4 {
+  color: #f8fafc;
+  margin-top: 18px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.briefing-markdown-body h1 { font-size: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 6px; }
+.briefing-markdown-body h2 { font-size: 16px; color: #38bdf8; }
+.briefing-markdown-body h3 { font-size: 14.5px; color: #7dd3fc; }
+
+.briefing-markdown-body p {
+  margin: 8px 0;
+}
+
+.briefing-markdown-body ul,
+.briefing-markdown-body ol {
+  padding-left: 22px;
+  margin: 8px 0;
+}
+
+.briefing-markdown-body li {
+  margin-bottom: 4px;
+}
+
+.briefing-markdown-body blockquote {
+  margin: 12px 0;
+  padding: 10px 16px;
+  background: rgba(14, 116, 144, 0.15);
+  border-left: 4px solid #38bdf8;
+  border-radius: 4px;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+.briefing-markdown-body strong {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.briefing-markdown-body code {
+  font-family: monospace;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: #38bdf8;
+}
+
+.briefing-markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 12.5px;
+}
+
+.briefing-markdown-body th,
+.briefing-markdown-body td {
+  padding: 8px 12px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  text-align: left;
+}
+
+.briefing-markdown-body th {
+  background: rgba(15, 23, 42, 0.9);
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.briefing-markdown-body tr:nth-child(even) {
+  background: rgba(30, 41, 59, 0.3);
+}
+
+/* 7. 打印 / PDF 导出媒体查询 */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .briefing-drawer,
+  .briefing-drawer * {
+    visibility: visible;
+  }
+  .briefing-drawer {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+    display: block !important;
+  }
+  .briefing-drawer-inner {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .briefing-drawer-header {
+    background: #f8fafc !important;
+    border-bottom: 2px solid #0f172a !important;
+    color: #0f172a !important;
+  }
+  .briefing-title {
+    color: #0f172a !important;
+  }
+  .briefing-subtitle {
+    color: #475569 !important;
+  }
+  .briefing-actions {
+    display: none !important;
+  }
+  .briefing-section {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 16px;
+  }
+  .audit-grade-box {
+    background: #f1f5f9 !important;
+    border: 1px solid #94a3b8 !important;
+  }
+  .grade-letter {
+    background: #ffffff !important;
+    box-shadow: none !important;
+  }
+  .grade-info strong, .grade-info span {
+    color: #0f172a !important;
+  }
+  .modality-card {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+  .modality-header {
+    color: #0f172a !important;
+  }
+  .modality-detail {
+    color: #475569 !important;
+  }
+  .briefing-kpi-card {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+  .briefing-kpi-val {
+    color: #0284c7 !important;
+  }
+  .briefing-markdown-body {
+    color: #1e293b !important;
+  }
+  .briefing-markdown-body h1,
+  .briefing-markdown-body h2,
+  .briefing-markdown-body h3 {
+    color: #0f172a !important;
+  }
+  .briefing-markdown-body blockquote {
+    background: #f1f5f9 !important;
+    border-left-color: #0284c7 !important;
+    color: #334155 !important;
+  }
+}
+
+
+

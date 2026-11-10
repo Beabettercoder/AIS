@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数据接入 · 海事态势</title>
+  <link rel="stylesheet" href="/assets/leaflet-1.9.4.css">
+  <style>
+    :root{font-family:Inter,"Microsoft YaHei",sans-serif;color:#182b38;background:#f3f7f8}
+    *{box-sizing:border-box}body{margin:0}main{max-width:1080px;margin:0 auto;padding:36px 22px 80px}
+    a{color:#0b6973;text-decoration:none}.back{display:inline-block;margin-bottom:25px}h1{font-size:30px;margin:0 0 8px}h2{font-size:19px;margin:0 0 16px}
+    .lead{color:#5e7180;margin:0 0 28px;line-height:1.7}.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .card{background:#fff;border:1px solid #dce6e8;border-radius:18px;padding:24px;box-shadow:0 8px 26px #16333e0a}
+    label{display:block;font-size:14px;font-weight:650;margin:15px 0 7px}input,select,textarea{width:100%;border:1px solid #cbd9dd;border-radius:10px;padding:11px;background:#fff;color:#182b38;font:inherit}textarea{min-height:180px;resize:vertical;line-height:1.6}
+    input[type=checkbox]{width:auto;margin-right:8px}.check{font-weight:400;color:#526877}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    button{border:0;border-radius:10px;padding:11px 17px;background:#0d6d76;color:white;font:inherit;font-weight:650;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+    button.secondary{background:#e7f0f1;color:#145d65}.help{font-size:13px;line-height:1.6;color:#647985}.status{min-height:25px;margin-top:14px;color:#245f67}
+    .status.error{color:#b0443d}.full{grid-column:1/-1}.hidden{display:none}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid #e7edef;vertical-align:top}th{color:#60717c}
+    .map-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 20px}.sample{overflow:auto;background:#f5f8f9;border-radius:10px;padding:15px;font-size:12px;line-height:1.5;max-height:240px}
+    .badge{display:inline-block;background:#e5f4f2;color:#176369;border-radius:99px;padding:4px 9px;font-size:12px;margin-right:8px}td{white-space:pre-line;overflow-wrap:anywhere}
+    .quality-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.quality-stat{border:1px solid #dce6e8;border-radius:12px;padding:12px;background:#f8fbfb}.quality-stat strong{display:block;font-size:22px;margin-top:4px}
+    .issue{border-left:4px solid #7e929d;background:#f7f9fa;border-radius:8px;padding:11px 13px;margin:8px 0;font-size:13px;line-height:1.55}.issue.error{border-color:#b0443d;background:#fff6f5}.issue.warning{border-color:#c88918;background:#fffaf0}.issue.info{border-color:#398095;background:#f2fafc}
+    .repair{display:flex;gap:10px;align-items:flex-start;border:1px solid #dde7e9;border-radius:10px;padding:12px;margin:8px 0}.repair input{width:auto;margin-top:3px}.repair span{display:block}.repair small{display:block;color:#647985;margin-top:3px;line-height:1.45}
+    .region-summary{margin-top:10px;padding:11px 13px;border-radius:10px;background:#f0f7f8;color:#3f626b;font-size:13px;line-height:1.55;border:1px solid #d9e8ea}
+    .source-stack{display:grid;gap:10px;max-height:570px;overflow:auto;padding-right:3px}.source-item{border:1px solid #e0e9eb;border-radius:12px;padding:13px 14px;background:#fbfdfd}.source-head{display:flex;gap:8px;align-items:center;justify-content:space-between}.source-head strong{font-size:15px}.source-kind{flex:none;background:#e7f2f3;color:#155f67;border-radius:99px;padding:3px 8px;font-size:11px}.source-meta{margin:7px 0 3px;color:#405c66;font-size:13px;line-height:1.5}.source-detail{margin:0;color:#697e87;font-size:12px;line-height:1.5}.source-id{display:block;margin-top:7px;color:#8a9aa0;font:11px/1.4 Consolas,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .batch-review{border:1px solid #d8e5e7;background:#f8fbfb;border-radius:13px;padding:14px;margin-bottom:18px}.batch-review h3{margin:0 0 10px;font-size:15px}.batch-item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid #e2ebed}.batch-item:first-of-type{border-top:0}.batch-item strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.batch-state{font-size:12px;color:#5f747d}.batch-state.ok{color:#16735f}.batch-state.bad{color:#b0443d}.batch-item button{padding:6px 10px;font-size:12px}
+    #map-preview{height:380px;border:1px solid #dce6e8;border-radius:12px;margin:18px 0;overflow:hidden}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}.map-grid{grid-template-columns:1fr}main{padding:24px 14px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="row" style="justify-content:space-between;margin-bottom:25px"><a class="back" style="margin:0" href="/">← 返回对话</a><a href="/data-management">管理已接入数据 →</a></div>
+  <h1>接入新数据</h1>
+  <p class="lead">上传后先检查字段、时间、坐标和来源。预览确认后才写入数据库。遥感 GeoTIFF 会自动读取 CRS、范围与波段，支持的 SAR 资产可在入库后自动检测并关联 AIS。</p>
+  <div class="grid">
+    <section class="card">
+      <h2>1. 选择来源</h2>
+      <form id="intake-form">
+        <label for="kind">数据类型</label>
+        <select id="kind"><option value="ais_csv">AIS 点位文件</option><option value="gis_geojson">GIS GeoJSON</option><option value="weather_csv">气象 CSV</option><option value="stac_json">遥感 STAC JSON</option><option value="remote_geotiff">遥感 GeoTIFF 影像</option><option value="event_text">事件文本 / 公告</option></select>
+        <div id="weather-mode-wrap" class="hidden">
+          <label for="weather-mode">气象数据模式</label><select id="weather-mode"><option value="observation">观测数据</option><option value="forecast">预报数据</option></select>
+          <label for="weather-source-type">来源适配器</label><select id="weather-source-type"><option value="generic">通用 CSV</option><option value="noaa_coops">NOAA CO-OPS</option></select>
+          <label for="weather-location-id">站点/网格 ID（文件没有时填写）</label><input id="weather-location-id" placeholder="例如 8770613">
+          <label for="weather-location-name">位置名称（可选）</label><input id="weather-location-name" placeholder="例如 Morgans Point">
+          <div class="row"><div style="flex:1"><label for="weather-lon">经度（文件没有时填写）</label><input id="weather-lon" type="number" step="any" placeholder="-94.985"></div><div style="flex:1"><label for="weather-lat">纬度（文件没有时填写）</label><input id="weather-lat" type="number" step="any" placeholder="29.68169"></div></div>
+        </div>
+        <div id="remote-raster-wrap" class="hidden">
+          <label for="remote-time">拍摄时间（UTC，可选，支持从文件元数据或文件名自动识别）</label><input id="remote-time" type="datetime-local" step="1">
+          <label for="remote-scene-id">场景 ID（可选，空白时按文件哈希生成）</label><input id="remote-scene-id" placeholder="例如 S1A_...">
+          <div class="row"><div style="flex:1"><label for="remote-platform">卫星平台（可选）</label><input id="remote-platform" placeholder="Sentinel-1A"></div><div style="flex:1"><label for="remote-sensor">传感器（可选）</label><input id="remote-sensor" placeholder="C-SAR"></div></div>
+          <div class="row"><div style="flex:1"><label for="remote-collection">数据集合（可选）</label><input id="remote-collection" placeholder="sentinel-1-grd"></div><div style="flex:1"><label for="remote-polarization">极化（可选）</label><select id="remote-polarization"><option value="">自动识别</option><option>VV</option><option>VH</option><option>HH</option><option>HV</option></select></div></div>
+          <label class="check"><input id="remote-auto-process" type="checkbox" checked>支持时自动检测目标并关联 AIS</label>
+        </div>
+        <div id="event-text-wrap" class="hidden">
+          <label for="event-source-url">来源网址（可选）</label>
+          <input id="event-source-url" type="url" placeholder="https://...">
+          <label for="event-published-at">来源发布日期（可选）</label>
+          <input id="event-published-at" type="date">
+          <label for="event-paste">直接粘贴事件文本（与文件二选一）</label>
+          <textarea id="event-paste" maxlength="300000" placeholder="粘贴港口公告、航行警告或新闻正文。系统只抽取原文能够支持的事件。"></textarea>
+          <p class="help">支持直接粘贴、TXT和带文本层的PDF。扫描版PDF暂不做OCR。发生时间和发布时间会分开处理。</p>
+        </div>
+        <label for="region-select">研究区域</label>
+        <select id="region-select"><option value="">正在读取研究区域…</option></select>
+        <div id="region-summary" class="region-summary">正在读取研究区信息…</div>
+        <div id="region-new-wrap" class="hidden">
+          <label for="region">新研究区域名称</label>
+          <input id="region" placeholder="例如 Houston-Galveston 或上海港" maxlength="120">
+          <p class="help">首次接入建议上传 GIS 边界。系统会用首个来源的空间范围建立临时边界，后续来源必须与其相交。</p>
+        </div>
+        <div id="gis-boundary-wrap" class="hidden">
+          <label class="check"><input id="use-as-region-boundary" type="checkbox">将该 GeoJSON 的范围登记为研究区边界</label>
+          <p class="help">仅在文件确实表示研究区边界时勾选；普通航道、港口点或设施图层不要勾选。</p>
+        </div>
+        <label for="file">本地文件（支持多选，单文件最大 200 MB）</label>
+        <input id="file" type="file" multiple accept=".csv,.gz,.xls,.xlsx,.zip,.json,.geojson,.tif,.tiff,.txt,.pdf">
+        <label class="check"><input id="assume-utc" type="checkbox" checked>如果来源时间没有时区，明确按 UTC 解释</label>
+        <p class="help">可一次选择多个同类型、同研究区域的文件，系统逐文件预览校验后批量确认入库。AIS 还支持含多份表格的 ZIP；未知列按原名保存在扩展属性中。系统保存每个来源的文件指纹、质量报告和修复审计。</p>
+        <button type="submit">生成预览</button>
+        <div class="status" id="upload-status" role="status"></div>
+      </form>
+    </section>
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><h2>已有来源</h2><a href="/data-management" style="font-size:13px">集中管理</a></div>
+      <div id="source-list" class="help">正在读取…</div>
+    </section>
+    <section class="card full">
+      <h2>发现可补充的数据</h2>
+      <p class="help">选择一个已登记来源和需要的数据类型。系统按已有范围列出可核实的来源与获取方式；目录链接不会当作已入库数据。</p>
+      <label for="discovery-source">起始来源</label>
+      <select id="discovery-source"><option value="">先接入或刷新来源</option></select>
+      <label for="discovery-date">目标 UTC 日期（可选）</label>
+      <input id="discovery-date" type="date">
+      <label for="discovery-kinds">希望补充</label>
+      <select id="discovery-kinds" multiple size="5">
+        <option value="ais">AIS</option><option value="gis">GIS</option><option value="remote_sensing">遥感</option>
+        <option value="weather">气象</option><option value="events">事件</option>
+      </select>
+      <p class="help">可按 Ctrl 选择多个类型。</p>
+      <button id="discover" type="button">查看候选来源</button>
+      <div id="discovery-status" class="status" role="status"></div>
+      <div id="discovery-results"></div>
+    </section>
+    <section class="card full hidden" id="review-card">
+      <h2>2. 核对与入库</h2>
+      <div id="batch-review" class="batch-review hidden"><h3 id="batch-title">批量文件</h3><div id="batch-list"></div></div>
+      <div id="review-summary"></div>
+      <p class="help" id="quality-note"></p>
+      <div id="quality-report"></div>
+      <div id="repair-plan"></div>
+      <div id="map-preview" class="hidden" aria-label="GIS 地图预览"></div>
+      <pre class="sample" id="sample"></pre>
+      <div class="row"><button class="secondary" id="validate" type="button">按修复方案重新校验</button><button id="commit" type="button" disabled>确认入库</button></div>
+      <div class="status" id="review-status" role="status"></div>
+    </section>
+  </div>
+</main>
+<script src="/assets/leaflet-1.9.4.js"></script>
+<script src="/assets/data-intake.js?v=2.7.0"></script>
+</body>
+</html>
