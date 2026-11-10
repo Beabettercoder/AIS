@@ -21,7 +21,7 @@ for source,score in [('nonoverlap', 'case_scores.npz'),('rolling','rolling_score
     p=orig[case][j,seed];assert len(p)==len(q);diff=np.abs(p-q);maxdiff=max(maxdiff,float(diff.max()))
     for b in ('0.01','0.05'):
      th=info['thresholds'][b]['threshold'];changes=int(((p>th)!=(q>th)).sum());cross1+=changes if b=='0.01' else 0;cross5+=changes if b=='0.05' else 0
-    N+=len(p);results[f'{source}/{case}/{name}/{seed}']={'n':len(p),'max_abs_cpu_gpu':float(diff.max())};del m if False else q
+    N+=len(p);results[f'{source}/{case}/{name}/{seed}']={'n':len(p),'max_abs_cpu_gpu':float(diff.max())};del q
    del m
 print(json.dumps({'n':N,'max_abs_diff':maxdiff,'crossing_1pct_differences':cross1,'crossing_5pct_differences':cross5}),flush=True)
 r={'scope':'all24 frozen single F1 models, 2 cases, non-overlap+rolling; CPU-vs-GPU7 score and threshold-replay verification','n_scores':N,'max_abs_cpu_gpu':maxdiff,'crossing_1pct_differences':cross1,'crossing_5pct_differences':cross5,'normalizer_reconstructed_exactly_from_train':True,'records':results,'warnings':['event labels are weak; thresholds not real FAR','floating-point device differences do not establish clinical or operational calibration']};p=D/'case_model_gpu_audit.json';assert not p.exists();p.write_text(json.dumps(r,indent=2))

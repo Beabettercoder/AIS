@@ -3016,8 +3016,9 @@
     },
     {
       "path": "project/outputs/formal_20261101/cases/v6/audit_case_model_replay.py",
-      "sha256": "df9010d3114248e14556f5534644a842425c74c3d53681b0a28ba9b8a8e439e4",
-      "bytes": 3076
+      "sha256": "bff5f94b2cd22b9562a92a69b04061013dfe3201079a319522b20bcbf226d3f4",
+      "bytes": 3087,
+      "original_server_sha256": "df9010d3114248e14556f5534644a842425c74c3d53681b0a28ba9b8a8e439e4"
     },
     {
       "path": "project/outputs/formal_20261101/cases/v6/render_cases.py",
@@ -6426,5 +6427,11 @@
     }
   ],
   "excluded_count": 1,
-  "warning": "some historical scripts embed original server paths and require original datasets, runtime and external repositories"
+  "warning": "some historical scripts embed original server paths and require original datasets, runtime and external repositories",
+  "modifications": [
+    {
+      "path": "project/outputs/formal_20261101/cases/v6/audit_case_model_replay.py",
+      "change": "Correct an invalid conditional del statement to del q in the published copy; server original unchanged."
+    }
+  ]
 }
